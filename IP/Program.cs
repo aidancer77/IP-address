@@ -16,7 +16,7 @@ namespace IP
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new EmployeeInfoForm());
+            Application.Run(new AuthorizationForm());
         }
     }
 }

@@ -1,0 +1,132 @@
+﻿using System.Windows.Forms;
+
+namespace IP
+{
+    partial class AdminCorrectLineForm
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.labelIPValue = new System.Windows.Forms.Label();
+            this.labelDateTime = new System.Windows.Forms.Label();
+            this.buttonChooseLine = new IP.RoundedButton();
+            this.labelChooseLine = new System.Windows.Forms.Label();
+            this.comboBoxLine = new System.Windows.Forms.ComboBox();
+            this.SuspendLayout();
+            // 
+            // labelIPValue
+            // 
+            this.labelIPValue.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelIPValue.AutoSize = true;
+            this.labelIPValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelIPValue.Location = new System.Drawing.Point(94, 105);
+            this.labelIPValue.Name = "labelIPValue";
+            this.labelIPValue.Size = new System.Drawing.Size(83, 20);
+            this.labelIPValue.TabIndex = 4;
+            this.labelIPValue.Text = "IPAddress";
+            this.labelIPValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // labelDateTime
+            // 
+            this.labelDateTime.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelDateTime.AutoSize = true;
+            this.labelDateTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelDateTime.Location = new System.Drawing.Point(373, 105);
+            this.labelDateTime.Name = "labelDateTime";
+            this.labelDateTime.Size = new System.Drawing.Size(78, 20);
+            this.labelDateTime.TabIndex = 4;
+            this.labelDateTime.Text = "Date&Time";
+            this.labelDateTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // buttonChooseLine
+            // 
+            this.buttonChooseLine.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.buttonChooseLine.BackColor = System.Drawing.Color.CadetBlue;
+            this.buttonChooseLine.CornerRadius = 15;
+            this.buttonChooseLine.FlatAppearance.BorderColor = System.Drawing.Color.CadetBlue;
+            this.buttonChooseLine.FlatAppearance.BorderSize = 0;
+            this.buttonChooseLine.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonChooseLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.buttonChooseLine.Location = new System.Drawing.Point(190, 260);
+            this.buttonChooseLine.Name = "buttonChooseLine";
+            this.buttonChooseLine.Size = new System.Drawing.Size(160, 35);
+            this.buttonChooseLine.TabIndex = 5;
+            this.buttonChooseLine.Text = "Выбрать";
+            this.buttonChooseLine.UseVisualStyleBackColor = false;
+            this.buttonChooseLine.Click += new System.EventHandler(this.ButtonChooseLine_Click);
+            // 
+            // labelChooseLine
+            // 
+            this.labelChooseLine.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelChooseLine.AutoSize = true;
+            this.labelChooseLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelChooseLine.Location = new System.Drawing.Point(209, 168);
+            this.labelChooseLine.Name = "labelChooseLine";
+            this.labelChooseLine.Size = new System.Drawing.Size(125, 18);
+            this.labelChooseLine.TabIndex = 4;
+            this.labelChooseLine.Text = "Выберите линию";
+            this.labelChooseLine.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // comboBoxLine
+            // 
+            this.comboBoxLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.comboBoxLine.FormattingEnabled = true;
+            this.comboBoxLine.Location = new System.Drawing.Point(190, 199);
+            this.comboBoxLine.Name = "comboBoxLine";
+            this.comboBoxLine.Size = new System.Drawing.Size(160, 26);
+            this.comboBoxLine.TabIndex = 9;
+            // 
+            // AdminCorrectLineForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(569, 410);
+            this.ControlBox = false;
+            this.Controls.Add(this.comboBoxLine);
+            this.Controls.Add(this.labelDateTime);
+            this.Controls.Add(this.labelIPValue);
+            this.Controls.Add(this.buttonChooseLine);
+            this.Controls.Add(this.labelChooseLine);
+            this.DoubleBuffered = true;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.MinimizeBox = false;
+            this.Name = "AdminCorrectLineForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "EmployeeInfoForm";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+            this.AcceptButton = buttonChooseLine;
+        }
+
+        #endregion
+
+        private RoundedButton buttonChooseLine;
+        private Label labelIPValue;
+        private Label labelDateTime;
+        private Label labelChooseLine;
+        private ComboBox comboBoxLine;
+    }
+}

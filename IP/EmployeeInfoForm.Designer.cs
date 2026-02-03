@@ -36,12 +36,8 @@ namespace IP
             this.textBoxDepartment = new System.Windows.Forms.ListBox();
             this.textBoxPosition = new System.Windows.Forms.ListBox();
             this.labelIPValue = new System.Windows.Forms.Label();
-            this.labelAttachPass = new System.Windows.Forms.Label();
             this.labelDateTime = new System.Windows.Forms.Label();
             this.comboBoxLine = new System.Windows.Forms.ComboBox();
-            this.labelLine = new System.Windows.Forms.Label();
-            this.buttonLabelPassword = new System.Windows.Forms.Button();
-            this.roundedButton1 = new IP.RoundedButton();
             this.loginButton = new IP.RoundedButton();
             this.SuspendLayout();
             // 
@@ -55,7 +51,6 @@ namespace IP
             this.textBoxName.Name = "textBoxName";
             this.textBoxName.Size = new System.Drawing.Size(405, 22);
             this.textBoxName.TabIndex = 3;
-            this.textBoxName.Visible = false;
             // 
             // textBoxDepartment
             // 
@@ -67,7 +62,6 @@ namespace IP
             this.textBoxDepartment.Name = "textBoxDepartment";
             this.textBoxDepartment.Size = new System.Drawing.Size(405, 22);
             this.textBoxDepartment.TabIndex = 3;
-            this.textBoxDepartment.Visible = false;
             // 
             // textBoxPosition
             // 
@@ -79,7 +73,6 @@ namespace IP
             this.textBoxPosition.Name = "textBoxPosition";
             this.textBoxPosition.Size = new System.Drawing.Size(405, 22);
             this.textBoxPosition.TabIndex = 3;
-            this.textBoxPosition.Visible = false;
             // 
             // labelIPValue
             // 
@@ -92,18 +85,6 @@ namespace IP
             this.labelIPValue.TabIndex = 4;
             this.labelIPValue.Text = "IPAddress";
             this.labelIPValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelAttachPass
-            // 
-            this.labelAttachPass.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.labelAttachPass.AutoSize = true;
-            this.labelAttachPass.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelAttachPass.Location = new System.Drawing.Point(143, 150);
-            this.labelAttachPass.Name = "labelAttachPass";
-            this.labelAttachPass.Size = new System.Drawing.Size(269, 18);
-            this.labelAttachPass.TabIndex = 4;
-            this.labelAttachPass.Text = "Для авторизации приложите пропуск";
-            this.labelAttachPass.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelDateTime
             // 
@@ -126,49 +107,6 @@ namespace IP
             this.comboBoxLine.Name = "comboBoxLine";
             this.comboBoxLine.Size = new System.Drawing.Size(134, 24);
             this.comboBoxLine.TabIndex = 6;
-            this.comboBoxLine.Visible = false;
-            // 
-            // labelLine
-            // 
-            this.labelLine.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.labelLine.AutoSize = true;
-            this.labelLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelLine.Location = new System.Drawing.Point(259, 109);
-            this.labelLine.Name = "labelLine";
-            this.labelLine.Size = new System.Drawing.Size(47, 16);
-            this.labelLine.TabIndex = 7;
-            this.labelLine.Text = "Линия";
-            this.labelLine.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.labelLine.Visible = false;
-            // 
-            // buttonLabelPassword
-            // 
-            this.buttonLabelPassword.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.buttonLabelPassword.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.buttonLabelPassword.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.buttonLabelPassword.Location = new System.Drawing.Point(201, 228);
-            this.buttonLabelPassword.Name = "buttonLabelPassword";
-            this.buttonLabelPassword.Size = new System.Drawing.Size(160, 34);
-            this.buttonLabelPassword.TabIndex = 8;
-            this.buttonLabelPassword.Text = "Вход по паролю";
-            // 
-            // roundedButton1
-            // 
-            this.roundedButton1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.roundedButton1.BackColor = System.Drawing.Color.CadetBlue;
-            this.roundedButton1.CornerRadius = 15;
-            this.roundedButton1.FlatAppearance.BorderColor = System.Drawing.Color.CadetBlue;
-            this.roundedButton1.FlatAppearance.BorderSize = 0;
-            this.roundedButton1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.roundedButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.roundedButton1.Location = new System.Drawing.Point(201, 230);
-            this.roundedButton1.Name = "roundedButton1";
-            this.roundedButton1.Size = new System.Drawing.Size(160, 35);
-            this.roundedButton1.TabIndex = 5;
-            this.roundedButton1.Text = "Авторизоваться";
-            this.roundedButton1.UseVisualStyleBackColor = false;
-            this.roundedButton1.Visible = false;
-            this.roundedButton1.Click += new System.EventHandler(this.LoginButton_Click);
             // 
             // loginButton
             // 
@@ -185,7 +123,6 @@ namespace IP
             this.loginButton.TabIndex = 5;
             this.loginButton.Text = "Авторизоваться";
             this.loginButton.UseVisualStyleBackColor = false;
-            this.loginButton.Visible = false;
             this.loginButton.Click += new System.EventHandler(this.LoginButton_Click);
             // 
             // EmployeeInfoForm
@@ -193,19 +130,17 @@ namespace IP
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(569, 410);
-            this.Controls.Add(this.roundedButton1);
+            this.ControlBox = false;
             this.Controls.Add(this.loginButton);
-            this.Controls.Add(this.buttonLabelPassword);
-            this.Controls.Add(this.labelLine);
             this.Controls.Add(this.comboBoxLine);
-            this.Controls.Add(this.labelAttachPass);
             this.Controls.Add(this.labelDateTime);
             this.Controls.Add(this.labelIPValue);
             this.Controls.Add(this.textBoxPosition);
             this.Controls.Add(this.textBoxDepartment);
             this.Controls.Add(this.textBoxName);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "EmployeeInfoForm";
-            //this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "EmployeeInfoForm";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.ResumeLayout(false);
@@ -214,17 +149,13 @@ namespace IP
         }
 
         #endregion
-        private System.Windows.Forms.ListBox textBoxName;
-        private System.Windows.Forms.ListBox textBoxDepartment;
-        private System.Windows.Forms.ListBox textBoxPosition;
-        private System.Windows.Forms.Label labelIPValue;
-        private Label labelAttachPass;
+        private ListBox textBoxName;
+        private ListBox textBoxDepartment;
+        private ListBox textBoxPosition;
+        private Label labelIPValue;
         private Label labelDateTime;
         private ComboBox comboBoxLine;
-        private Label labelLine;
-        private Button buttonLabelPassword;
         private RoundedButton loginButton;
-        private RoundedButton roundedButton1;
     }
 }
 

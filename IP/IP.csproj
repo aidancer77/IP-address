@@ -120,17 +120,46 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdminCorrectLineForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AdminCorrectLineForm.Designer.cs">
+      <DependentUpon>AdminCorrectLineForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AdminForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AdminForm.Designer.cs">
+      <DependentUpon>AdminForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AuthorizationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AuthorizationForm.Designer.cs">
+      <DependentUpon>AuthorizationForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="EmployeeInfoForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="EmployeeInfoForm.Designer.cs">
       <DependentUpon>EmployeeInfoForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Lines.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="FormInfoProperty.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoundedButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <EmbeddedResource Include="AdminCorrectLineForm.resx">
+      <DependentUpon>AdminCorrectLineForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AdminForm.resx">
+      <DependentUpon>AdminForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AuthorizationForm.resx">
+      <DependentUpon>AuthorizationForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="EmployeeInfoForm.resx">
       <DependentUpon>EmployeeInfoForm.cs</DependentUpon>
       <SubType>Designer</SubType>
