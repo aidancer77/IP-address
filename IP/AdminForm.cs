@@ -18,9 +18,6 @@ namespace IP
             InitializeComponent();
             GetIPAddress();
             SetTimer();
-
-            this.AcceptButton = buttonLabelPassword;
-            this.buttonLabelPassword.Click += new System.EventHandler(this.ButtonLabelPassword_Click);  
         }
 
         private void SetTimer()
@@ -60,7 +57,7 @@ namespace IP
         {
             AdminCorrectLineForm adminCorrectLineForm = new AdminCorrectLineForm();
 
-            if (textBoxPassword.Text == "12345" || textBoxPassword.Text == "67890")
+            if (textBoxPassword.Text == "1")
             {
                 this.Hide();
                 adminCorrectLineForm.Show();

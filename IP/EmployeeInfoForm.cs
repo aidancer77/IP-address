@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace IP
 {
@@ -16,14 +17,6 @@ namespace IP
             InitializeComponent();
             GetIPAddress();
             SetTimer();
-            ComboBoxLineValue();
-        }
-
-        private void ComboBoxLineValue()
-        {
-            Lines lines = new Lines();
-            comboBoxLine.Items.AddRange(lines.lineName);
-            comboBoxLine.Text = "Выберите линию";
         }
 
         private void SetTimer()
@@ -36,13 +29,11 @@ namespace IP
             };
             FormTimer.Start();
         }
-
         private void GetIPAddress()
         {
             string localIP = GetLocalIPv4Address();
             labelIPValue.Text = localIP;
         }
-
         private string GetLocalIPv4Address()
         {
             string hostName = Dns.GetHostName();

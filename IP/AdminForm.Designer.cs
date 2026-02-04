@@ -118,6 +118,7 @@ namespace IP
             this.Text = "EmployeeInfoForm";
             this.ResumeLayout(false);
             this.PerformLayout();
+            this.AcceptButton = buttonLabelPassword;
 
         }
 

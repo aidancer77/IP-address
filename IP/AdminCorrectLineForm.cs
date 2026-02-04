@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace IP
 {
@@ -17,12 +18,11 @@ namespace IP
         {
             InitializeComponent();
             GetIPAddress();
-            SetTimer(); 
+            SetTimer();
             ComboBoxLineValue();
-
-            this.AcceptButton = buttonChooseLine;
-            this.buttonChooseLine.Click += new System.EventHandler(this.ButtonChooseLine_Click);
         }
+
+        public string SelectedLine => comboBoxLine.Text;
 
         private void SetTimer()
         {
@@ -58,15 +58,13 @@ namespace IP
         }
 
         private void ButtonChooseLine_Click(object sender, EventArgs e)
-        {            
-            AuthorizationForm authorizationForm = new AuthorizationForm();            
-
-            if (comboBoxLine.SelectedIndex != -1)
-            {
-                this.Hide();
-                authorizationForm.Show();
-            }
-            else { MessageBox.Show("Выберите линию"); }
+        {
+            AuthorizationForm authorizationForm = new AuthorizationForm();
+            string selectedLine = comboBoxLine.Text;
+            
+            if()
+            this.Hide();
+            authorizationForm.Show();
         }
 
         private void ComboBoxLineValue()

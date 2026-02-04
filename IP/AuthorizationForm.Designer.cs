@@ -34,6 +34,7 @@ namespace IP
             this.labelIPValue = new System.Windows.Forms.Label();
             this.labelDateTime = new System.Windows.Forms.Label();
             this.buttonLabelPassword = new IP.RoundedButton();
+            this.labelLineResultAuth = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // labelAttachPass
@@ -89,12 +90,25 @@ namespace IP
             this.buttonLabelPassword.UseVisualStyleBackColor = false;
             this.buttonLabelPassword.Click += new System.EventHandler(this.ButtonLabelPassword_Click);
             // 
+            // labelLineResultAuth
+            // 
+            this.labelLineResultAuth.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelLineResultAuth.AutoSize = true;
+            this.labelLineResultAuth.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelLineResultAuth.Location = new System.Drawing.Point(255, 107);
+            this.labelLineResultAuth.Name = "labelLineResultAuth";
+            this.labelLineResultAuth.Size = new System.Drawing.Size(39, 20);
+            this.labelLineResultAuth.TabIndex = 7;
+            this.labelLineResultAuth.Text = "132";
+            this.labelLineResultAuth.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // AuthorizationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(569, 410);
             this.ControlBox = false;
+            this.Controls.Add(this.labelLineResultAuth);
             this.Controls.Add(this.labelDateTime);
             this.Controls.Add(this.labelIPValue);
             this.Controls.Add(this.buttonLabelPassword);
@@ -116,5 +130,6 @@ namespace IP
         private Label labelAttachPass;
         private Label labelIPValue;
         private Label labelDateTime;
+        private Label labelLineResultAuth;
     }
 }

@@ -13,56 +13,78 @@ namespace IP
 {
     public partial class AuthorizationForm : Form
     {
-        private SerialPort port_COM7;
+        private static SerialPort port_COM7; // Делаем статическим, чтобы был единственным для всех экземпляров
         private bool continueReading = true;
         private List<string> dataList = new List<string>();
         private Thread readThread;
+        private string selectedLine;
 
-        public AuthorizationForm()
+        // Конструктор с параметром для передачи выбранной линии
+        public AuthorizationForm(string line)
         {
             InitializeComponent();
+            selectedLine = line;
             InitializeSerialPort();
             GetIPAddress();
             SetTimer();
+            SetLineLabel();
+        }
+
+        // Старый конструктор
+        public AuthorizationForm() : this("") { }
+
+        private void SetLineLabel()
+        {
+            labelLineResultAuth.Text = selectedLine;
         }
 
         public void Read()
         {
-            EmployeeInfoForm employeeInfoForm = new EmployeeInfoForm();
-
             while (continueReading)
             {
                 try
                 {
-                    string message = port_COM7.ReadLine().ToString();
+                    string message = port_COM7.ReadLine();
 
                     string hexValue = message.Replace(" ", String.Empty);
                     hexValue = hexValue.Substring(0, hexValue.IndexOf(","));
                     hexValue = hexValue.Substring(hexValue.LastIndexOf("=") + 1);
 
-                    string urlEmplInfo = "http://192.168.77.74:8181/operators/checkCard?line=4&codekey=" + $"{hexValue}";
-                    //string textBoxEmplInfo = GetJSONFromURL(urlEmplInfo).GetAwaiter().GetResult();
+                    // Используем выбранную линию в URL
+                    string urlEmplInfo = $"http://192.168.77.74:8181/operators/checkCard?line={selectedLine}&codekey={hexValue}";
 
-                    //JsonDocument jsonDocEmployee = JsonDocument.Parse(textBoxEmplInfo);
-                    //JsonElement rootEmployee = jsonDocEmployee.RootElement;
-                    //string name_value_empl = rootEmployee.GetProperty("name").GetString();
-                    //string department_value_empl = rootEmployee.GetProperty("department").GetString();
-                    //string position_value_empl = rootEmployee.GetProperty("pos").GetString();
+                    // Асинхронно получаем данные
+                    var responseTask = GetJSONFromURL(urlEmplInfo);
+                    responseTask.Wait(); // Блокируем поток до получения ответа
 
-                    this.Invoke(new Action(() =>
+                    if (!string.IsNullOrEmpty(responseTask.Result))
                     {
-                        this.Hide();
-                        employeeInfoForm.Show();
+                        JsonDocument jsonDocEmployee = JsonDocument.Parse(responseTask.Result);
+                        JsonElement rootEmployee = jsonDocEmployee.RootElement;
+                        string name_value_empl = rootEmployee.GetProperty("name").GetString();
+                        string department_value_empl = rootEmployee.GetProperty("department").GetString();
+                        string position_value_empl = rootEmployee.GetProperty("pos").GetString();
 
-                        //employeeInfoForm.NameTextBox.Text = "1";
-                        //employeeInfoForm.DepartmentTextBox.Text = department_value_empl;
-                        //employeeInfoForm.PositionTextBox.Text = position_value_empl;
-                    }));
+                        this.Invoke(new Action(() =>
+                        {
+                            EmployeeInfoForm employeeInfoForm = new EmployeeInfoForm();
+                            this.Hide();
+                            employeeInfoForm.Show();
 
-                    // После успешного открытия формы прекращаем чтение
-                    continueReading = false;
+                            // Передаем данные в следующую форму
+                            employeeInfoForm.NameTextBox.Text = name_value_empl;
+                            employeeInfoForm.DepartmentTextBox.Text = department_value_empl;
+                            employeeInfoForm.PositionTextBox.Text = position_value_empl;
+                        }));
+
+                        // После успешного открытия формы прекращаем чтение
+                        continueReading = false;
+                    }
                 }
-                catch (TimeoutException) { }
+                catch (TimeoutException)
+                {
+                    // Игнорируем таймауты, продолжаем чтение
+                }
                 catch (Exception ex)
                 {
                     this.Invoke(new Action(() =>
@@ -76,41 +98,69 @@ namespace IP
 
         private static async Task<string> GetJSONFromURL(string urlJSON)
         {
-            HttpClient client = new HttpClient();
-            // Call asynchronous network methods in a try/catch block to handle exceptions.
-            try
+            using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.GetAsync(urlJSON);
-                response.EnsureSuccessStatusCode();
-                string responseBody = await response.Content.ReadAsStringAsync();
-                return responseBody;
-            }
-            catch (HttpRequestException e)
-            {
-                MessageBox.Show($"Ошибка HTTP: {e.Message}");
-                return null; // или throw; чтобы пробросить исключение дальше
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Общая ошибка: {ex.Message}");
-                return null;
+                try
+                {
+                    HttpResponseMessage response = await client.GetAsync(urlJSON);
+                    response.EnsureSuccessStatusCode();
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    return responseBody;
+                }
+                catch (HttpRequestException e)
+                {
+                    MessageBox.Show($"Ошибка HTTP: {e.Message}");
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Общая ошибка: {ex.Message}");
+                    return null;
+                }
             }
         }
-        
+
         private void InitializeSerialPort()
         {
+            // Проверяем, открыт ли уже порт
+            if (port_COM7 != null && port_COM7.IsOpen)
+            {
+                // Если порт уже открыт, закрываем его перед повторным использованием
+                try
+                {
+                    port_COM7.Close();
+                }
+                catch { }
+            }
+
+            // Создаем новый экземпляр порта
             port_COM7 = new SerialPort("COM7", 9600, Parity.None, 8, StopBits.One);
             port_COM7.Handshake = Handshake.None;
             port_COM7.ReadTimeout = 500;
             port_COM7.WriteTimeout = 500;
 
-            port_COM7.Open();
+            try
+            {
+                port_COM7.Open();
+                continueReading = true;
 
-            continueReading = true;
+                // Останавливаем старый поток, если он существует
+                if (readThread != null && readThread.IsAlive)
+                {
+                    continueReading = false;
+                    readThread.Join(500);
+                }
 
-            readThread = new Thread(Read);
-            readThread.IsBackground = true;
-            readThread.Start();
+                // Создаем новый поток для чтения
+                readThread = new Thread(Read);
+                readThread.IsBackground = true;
+                readThread.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка открытия порта COM7: {ex.Message}");
+                continueReading = false;
+            }
         }
 
         private void SetTimer()
@@ -122,11 +172,13 @@ namespace IP
             };
             FormTimer.Start();
         }
+
         private void GetIPAddress()
         {
             string localIP = GetLocalIPv4Address();
             labelIPValue.Text = localIP;
         }
+
         private string GetLocalIPv4Address()
         {
             string hostName = Dns.GetHostName();
@@ -150,8 +202,38 @@ namespace IP
         {
             AdminForm adminForm = new AdminForm();
 
+            // Закрываем порт перед переходом
+            if (port_COM7 != null && port_COM7.IsOpen)
+            {
+                continueReading = false;
+                if (readThread != null && readThread.IsAlive)
+                {
+                    readThread.Join(500);
+                }
+                port_COM7.Close();
+            }
+
             this.Hide();
             adminForm.Show();
+        }
+
+        // Переопределяем метод закрытия формы для корректного освобождения ресурсов
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            // Останавливаем поток и закрываем порт при закрытии формы
+            continueReading = false;
+
+            if (readThread != null && readThread.IsAlive)
+            {
+                readThread.Join(1000);
+            }
+
+            if (port_COM7 != null && port_COM7.IsOpen)
+            {
+                port_COM7.Close();
+            }
         }
     }
 }

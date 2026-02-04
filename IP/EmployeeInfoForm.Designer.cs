@@ -37,8 +37,8 @@ namespace IP
             this.textBoxPosition = new System.Windows.Forms.ListBox();
             this.labelIPValue = new System.Windows.Forms.Label();
             this.labelDateTime = new System.Windows.Forms.Label();
-            this.comboBoxLine = new System.Windows.Forms.ComboBox();
             this.loginButton = new IP.RoundedButton();
+            this.labelLineResultEmpl = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBoxName
@@ -98,16 +98,6 @@ namespace IP
             this.labelDateTime.Text = "Date&Time";
             this.labelDateTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // comboBoxLine
-            // 
-            this.comboBoxLine.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.comboBoxLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.comboBoxLine.FormattingEnabled = true;
-            this.comboBoxLine.Location = new System.Drawing.Point(214, 105);
-            this.comboBoxLine.Name = "comboBoxLine";
-            this.comboBoxLine.Size = new System.Drawing.Size(134, 24);
-            this.comboBoxLine.TabIndex = 6;
-            // 
             // loginButton
             // 
             this.loginButton.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -125,14 +115,26 @@ namespace IP
             this.loginButton.UseVisualStyleBackColor = false;
             this.loginButton.Click += new System.EventHandler(this.LoginButton_Click);
             // 
+            // labelLineResultEmpl
+            // 
+            this.labelLineResultEmpl.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelLineResultEmpl.AutoSize = true;
+            this.labelLineResultEmpl.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelLineResultEmpl.Location = new System.Drawing.Point(255, 107);
+            this.labelLineResultEmpl.Name = "labelLineResultEmpl";
+            this.labelLineResultEmpl.Size = new System.Drawing.Size(39, 20);
+            this.labelLineResultEmpl.TabIndex = 7;
+            this.labelLineResultEmpl.Text = "132";
+            this.labelLineResultEmpl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // EmployeeInfoForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(569, 410);
             this.ControlBox = false;
+            this.Controls.Add(this.labelLineResultEmpl);
             this.Controls.Add(this.loginButton);
-            this.Controls.Add(this.comboBoxLine);
             this.Controls.Add(this.labelDateTime);
             this.Controls.Add(this.labelIPValue);
             this.Controls.Add(this.textBoxPosition);
@@ -154,8 +156,8 @@ namespace IP
         private ListBox textBoxPosition;
         private Label labelIPValue;
         private Label labelDateTime;
-        private ComboBox comboBoxLine;
         private RoundedButton loginButton;
+        private Label labelLineResultEmpl;
     }
 }
 
