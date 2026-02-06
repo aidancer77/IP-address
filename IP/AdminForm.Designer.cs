@@ -35,6 +35,7 @@ namespace IP
             this.labelAttachPass = new System.Windows.Forms.Label();
             this.textBoxPassword = new System.Windows.Forms.TextBox();
             this.buttonLabelPassword = new IP.RoundedButton();
+            this.roundedButton1 = new IP.RoundedButton();
             this.SuspendLayout();
             // 
             // labelIPValue
@@ -99,8 +100,26 @@ namespace IP
             this.buttonLabelPassword.UseVisualStyleBackColor = false;
             this.buttonLabelPassword.Click += new System.EventHandler(this.ButtonLabelPassword_Click);
             // 
+            // roundedButton1
+            // 
+            this.roundedButton1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.roundedButton1.BackColor = System.Drawing.Color.CadetBlue;
+            this.roundedButton1.CornerRadius = 15;
+            this.roundedButton1.FlatAppearance.BorderColor = System.Drawing.Color.CadetBlue;
+            this.roundedButton1.FlatAppearance.BorderSize = 0;
+            this.roundedButton1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.roundedButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.roundedButton1.Location = new System.Drawing.Point(190, 311);
+            this.roundedButton1.Name = "roundedButton1";
+            this.roundedButton1.Size = new System.Drawing.Size(160, 35);
+            this.roundedButton1.TabIndex = 5;
+            this.roundedButton1.Text = "Вернуться";
+            this.roundedButton1.UseVisualStyleBackColor = false;
+            this.roundedButton1.Click += new System.EventHandler(this.ButtonLabelBack_Click);
+            // 
             // AdminForm
             // 
+            this.AcceptButton = this.buttonLabelPassword;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(569, 410);
@@ -108,6 +127,7 @@ namespace IP
             this.Controls.Add(this.textBoxPassword);
             this.Controls.Add(this.labelDateTime);
             this.Controls.Add(this.labelIPValue);
+            this.Controls.Add(this.roundedButton1);
             this.Controls.Add(this.buttonLabelPassword);
             this.Controls.Add(this.labelAttachPass);
             this.DoubleBuffered = true;
@@ -118,7 +138,6 @@ namespace IP
             this.Text = "EmployeeInfoForm";
             this.ResumeLayout(false);
             this.PerformLayout();
-            this.AcceptButton = buttonLabelPassword;
 
         }
 
@@ -129,5 +148,6 @@ namespace IP
         private Label labelDateTime;
         private Label labelAttachPass;
         private TextBox textBoxPassword;
+        private RoundedButton roundedButton1;
     }
 }

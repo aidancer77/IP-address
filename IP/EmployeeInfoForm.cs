@@ -2,28 +2,39 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace IP
 {
     public partial class EmployeeInfoForm : Form
     {
-        public ListBox NameTextBox => textBoxName;
-        public ListBox DepartmentTextBox => textBoxDepartment;
-        public ListBox PositionTextBox => textBoxPosition;
+        private string selectedLine;
+        public TextBox NameTextBox => textBoxName;
+        public TextBox DepartmentTextBox => textBoxDepartment;
+        public TextBox PositionTextBox => textBoxPosition;
 
-        public EmployeeInfoForm()
+        public EmployeeInfoForm(string line)
         {
             InitializeComponent();
+            selectedLine = line;
+            InitializeControls();
             GetIPAddress();
             SetTimer();
+        }
+
+        public EmployeeInfoForm() : this("") { }
+
+        private void InitializeControls()
+        {
+            if (labelLineResultEmpl != null)
+            {
+                labelLineResultEmpl.Text = selectedLine;
+            }
         }
 
         private void SetTimer()
         {
             System.Windows.Forms.Timer FormTimer = new System.Windows.Forms.Timer();
             FormTimer.Tick += (s, e) =>
-            
             {
                 labelDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
             };
@@ -51,10 +62,6 @@ namespace IP
                 }
             }
             return "IP-адрес не найден";
-        }
-
-        private void LoginButton_Click(object sender, EventArgs e)
-        {
         }
     }
 }

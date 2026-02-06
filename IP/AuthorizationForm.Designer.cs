@@ -121,7 +121,6 @@ namespace IP
             this.Text = "EmployeeInfoForm";
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion

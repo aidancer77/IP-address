@@ -62,7 +62,15 @@ namespace IP
                 this.Hide();
                 adminCorrectLineForm.Show();
             }
-            else { MessageBox.Show("Введите верный пароль"); }
+            else { MessageBox.Show("Введите верный пароль", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+        }
+
+        private void ButtonLabelBack_Click(object sender, EventArgs e)
+        {
+            AuthorizationForm authorizationForm = new AuthorizationForm();
+
+            this.Hide();
+            authorizationForm.Show();
         }
     }
 }

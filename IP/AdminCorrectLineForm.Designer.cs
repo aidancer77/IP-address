@@ -83,7 +83,7 @@ namespace IP
             this.labelChooseLine.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.labelChooseLine.AutoSize = true;
             this.labelChooseLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelChooseLine.Location = new System.Drawing.Point(209, 168);
+            this.labelChooseLine.Location = new System.Drawing.Point(210, 168);
             this.labelChooseLine.Name = "labelChooseLine";
             this.labelChooseLine.Size = new System.Drawing.Size(125, 18);
             this.labelChooseLine.TabIndex = 4;

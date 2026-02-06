@@ -22,7 +22,11 @@ namespace IP
             ComboBoxLineValue();
         }
 
-        public string SelectedLine => comboBoxLine.Text;
+        public string comboBoxLineResult
+        {
+            get { return comboBoxLine.Text; }
+            set { comboBoxLine.Text = value; }
+        }
 
         private void SetTimer()
         {
@@ -56,13 +60,19 @@ namespace IP
             }
             return "IP-адрес не найден";
         }
-
+        
         private void ButtonChooseLine_Click(object sender, EventArgs e)
         {
-            AuthorizationForm authorizationForm = new AuthorizationForm();
+            if (string.IsNullOrEmpty(comboBoxLine.Text) || comboBoxLine.Text == "Выберите линию")
+            {
+                MessageBox.Show("Пожалуйста, выберите линию", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Получаем выбранную линию
             string selectedLine = comboBoxLine.Text;
-            
-            if()
+
+            AuthorizationForm authorizationForm = new AuthorizationForm(selectedLine);
             this.Hide();
             authorizationForm.Show();
         }
@@ -72,6 +82,14 @@ namespace IP
             Lines lines = new Lines();
             comboBoxLine.Items.AddRange(lines.lineName);
             comboBoxLine.Text = "Выберите линию";
+        }
+
+        // Закрываем порт при закрытии формы
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            base.OnFormClosed(e);
+            // Если форма была создана ранее, убедимся, что порт закрыт
+            // В этом классе порт не открывается, но для безопасности
         }
     }
 }
