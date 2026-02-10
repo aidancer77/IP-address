@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO.Ports;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,174 +11,74 @@ namespace IP
 {
     public partial class AuthorizationForm : Form
     {
-        private SerialPort port_COM7;
+        private string selectedLineName;
+        private int selectedLineId;
         private bool continueReading = true;
-        private Thread readThread;
-        private string selectedLine; // Храним выбранную линию
-        private bool isPortInitialized = false;
 
-        // Конструктор с параметром для передачи выбранной линии
-        public AuthorizationForm(string line)
+        public AuthorizationForm(string lineName, int lineId)
         {
             InitializeComponent();
-            selectedLine = line;
-            InitializeSerialPort();
+
+            selectedLineName = lineName;
+            selectedLineId = lineId;
+
+            LoadLineInfoFromJson();
             GetIPAddress();
             SetTimer();
-            SetLineLabel(); // Устанавливаем значение в label
+            SetLineLabel();
         }
 
-        // Старый конструктор (если нужен для обратной совместимости)
-        public AuthorizationForm() : this("") { }
+        public AuthorizationForm() : this("", 0) { }
 
         private void SetLineLabel()
         {
             if (labelLineResultAuth != null)
             {
-                labelLineResultAuth.Text = selectedLine;
+                labelLineResultAuth.Text = selectedLineName;
             }
         }
 
-        public void Read()
-        {
-            while (continueReading)
-            {
-                try
-                {
-                    if (port_COM7 == null || !port_COM7.IsOpen)
-                    {
-                        Thread.Sleep(100);
-                        continue;
-                    }
-
-                    string message = port_COM7.ReadLine();
-
-                    if (labelLineResultAuth.Text == "")
-                    {
-                        MessageBox.Show("Пожалуйста, выберите линию", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                    else
-                    {
-                        string hexValue = message.Replace(" ", String.Empty);
-                        hexValue = hexValue.Substring(0, hexValue.IndexOf(","));
-                        hexValue = hexValue.Substring(hexValue.LastIndexOf("=") + 1);
-
-                        // Используем выбранную линию в URL
-                        string urlEmplInfo = $"http://192.168.77.74:8181/operators/checkCard?line=4&codekey={hexValue}";
-
-                        // Получаем данные асинхронно
-                        string textBoxEmplInfo = GetJSONFromURL(urlEmplInfo).GetAwaiter().GetResult();
-
-                        if (!string.IsNullOrEmpty(textBoxEmplInfo))
-                        {
-                            JsonDocument jsonDocEmployee = JsonDocument.Parse(textBoxEmplInfo);
-                            JsonElement rootEmployee = jsonDocEmployee.RootElement;
-                            string name_value_empl = rootEmployee.GetProperty("name").GetString();
-                            string department_value_empl = rootEmployee.GetProperty("department").GetString();
-                            string position_value_empl = rootEmployee.GetProperty("pos").GetString();
-
-                            this.Invoke(new Action(() =>
-                            {
-                                // Создаем новую форму EmployeeInfoForm с данными
-                                EmployeeInfoForm employeeInfoForm = new EmployeeInfoForm();
-                                employeeInfoForm.NameTextBox.Text = name_value_empl;
-                                employeeInfoForm.DepartmentTextBox.Text = department_value_empl;
-                                employeeInfoForm.PositionTextBox.Text = position_value_empl;
-
-                                this.Hide();
-                                employeeInfoForm.Show();
-                            }));
-                        }
-                    }
-
-                    // После успешного открытия формы прекращаем чтение
-                    continueReading = false;
-                }
-                catch (TimeoutException)
-                {
-                    // Игнорируем таймауты - это нормально для последовательного порта
-                    Thread.Sleep(100);
-                }
-                catch (Exception ex)
-                {
-                    this.Invoke(new Action(() =>
-                    {
-                        MessageBox.Show($"Ошибка чтения карты: {ex.Message}");
-                    }));
-                    Thread.Sleep(1000);
-                }
-            }
-        }
-
-        private static async Task<string> GetJSONFromURL(string urlJSON)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                try
-                {
-                    HttpResponseMessage response = await client.GetAsync(urlJSON);
-                    response.EnsureSuccessStatusCode();
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    return responseBody;
-                }
-                catch (HttpRequestException e)
-                {
-                    MessageBox.Show($"Ошибка HTTP: {e.Message}");
-                    return null;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Общая ошибка: {ex.Message}");
-                    return null;
-                }
-            }
-        }
-
-        private void InitializeSerialPort()
+        private LineInfo LoadLineInfoFromJson()
         {
             try
             {
-                if (port_COM7 != null && port_COM7.IsOpen)
+                string appFolder = AppDomain.CurrentDomain.BaseDirectory;
+                string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
+
+                if (!File.Exists(jsonFilePath))
                 {
-                    port_COM7.Close();
-                    port_COM7.Dispose();
+                    File.Delete(jsonFilePath);
                 }
 
-                port_COM7 = new SerialPort("COM7", 9600, Parity.None, 8, StopBits.One);
-                port_COM7.Handshake = Handshake.None;
-                port_COM7.ReadTimeout = 500;
-                port_COM7.WriteTimeout = 500;
-                port_COM7.Open();
-
-                continueReading = true;
-                isPortInitialized = true;
-
-                if (readThread != null && readThread.IsAlive)
+                var defaultSettings = new
                 {
-                    readThread.Join(100);
-                }
+                    Admin = "220832",
+                    Server = "192.168.77.74:8181",
+                    Timer = 5,
+                    LineId = selectedLineId,
+                    LineName = selectedLineName
+                };
 
-                readThread = new Thread(Read);
-                readThread.IsBackground = true;
-                readThread.Start();
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                MessageBox.Show($"Доступ к порту COM7 запрещен: {ex.Message}\n" +
-                              "Возможно порт занят другой программой.");
-                isPortInitialized = false;
+                // Используем Newtonsoft.Json для простоты
+                string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(defaultSettings,
+                    Newtonsoft.Json.Formatting.Indented);
+
+                File.WriteAllText(jsonFilePath, jsonString, System.Text.Encoding.UTF8);
+
+                string jsonContent = File.ReadAllText(jsonFilePath);
+                return JsonSerializer.Deserialize<LineInfo>(jsonContent);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка инициализации COM-порта: {ex.Message}");
-                isPortInitialized = false;
+                MessageBox.Show($"Ошибка загрузки настроек линии: {ex.Message}");
+                return null;
             }
         }
 
         private void SetTimer()
         {
-            System.Windows.Forms.Timer FormTimer = new System.Windows.Forms.Timer();
-            FormTimer.Interval = 1000; // Обновляем каждую секунду
+            Timer FormTimer = new Timer();
+            FormTimer.Interval = 1000;
             FormTimer.Tick += (s, e) =>
             {
                 labelDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
@@ -203,7 +101,7 @@ namespace IP
                 {
                     if (address.AddressFamily == AddressFamily.InterNetwork)
                     {
-                        if (address.ToString() != "127.0.0.1") // Исправлено с "::1" на "127.0.0.1"
+                        if (address.ToString() != "127.0.0.1")
                         {
                             return address.ToString();
                         }
@@ -217,53 +115,56 @@ namespace IP
             }
         }
 
-        private void ButtonLabelPassword_Click(object sender, EventArgs e)
+        public void ButtonLabelPassword_Click(object sender, EventArgs e)
         {
-            // Закрываем порт перед переходом
-            CloseSerialPort();
+            // Останавливаем чтение, но не закрываем порт
+            SerialPortManager.StopReading();
 
             AdminForm adminForm = new AdminForm();
             this.Hide();
             adminForm.Show();
         }
 
-        private void CloseSerialPort()
+        private void ButtonLabelCard_Click(object sender, EventArgs e)
         {
-            continueReading = false;
-
-            if (readThread != null && readThread.IsAlive)
+            // Сначала проверяем, не занят ли порт
+            if (SerialPortManager.IsPortOpen)
             {
-                readThread.Join(500); // Даем потоку время на завершение
+                // Если порт уже открыт, останавливаем чтение и закрываем
+                SerialPortManager.StopReading();
+                SerialPortManager.ClosePort();
+
+                // Даем время порту освободиться
+                System.Threading.Thread.Sleep(200);
             }
 
-            if (port_COM7 != null)
+            try
             {
-                if (port_COM7.IsOpen)
+                // Создаем EmployeeInfoForm с выбранной линией
+                EmployeeInfoForm employeeForm = new EmployeeInfoForm(selectedLineName);
+
+                // Инициализируем COM-порт с callback-ом от новой формы
+                bool portInitialized = SerialPortManager.InitializePort(employeeForm.ProcessCardData);
+
+                if (!portInitialized)
                 {
-                    try
-                    {
-                        port_COM7.Close();
-                    }
-                    catch (Exception) { }
+                    // Если не удалось инициализировать порт, все равно показываем форму
+                    MessageBox.Show("Не удалось инициализировать COM-порт. Чтение карт будет недоступно.",
+                                  "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-                port_COM7.Dispose();
-                port_COM7 = null;
+                else
+                {
+                    Console.WriteLine("COM-порт успешно инициализирован для чтения карт");
+                }
+
+                this.Hide();
+                employeeForm.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при создании формы: {ex.Message}",
+                               "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        // Обработчик события закрытия формы
-        //private void AuthorizationForm_FormClosing(object sender, FormClosingEventArgs e)
-        //{
-        //    CloseSerialPort();
-        //}
-
-        //// При возвращении на форму заново открываем порт
-        //private void AuthorizationForm_VisibleChanged(object sender, EventArgs e)
-        //{
-        //    if (this.Visible && !isPortInitialized)
-        //    {
-        //        InitializeSerialPort();
-        //    }
-        //}
     }
 }

@@ -30,11 +30,14 @@ namespace IP
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.labelIPValue = new System.Windows.Forms.Label();
             this.labelDateTime = new System.Windows.Forms.Label();
             this.buttonChooseLine = new IP.RoundedButton();
             this.labelChooseLine = new System.Windows.Forms.Label();
             this.comboBoxLine = new System.Windows.Forms.ComboBox();
+            this.lineInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            ((System.ComponentModel.ISupportInitialize)(this.lineInfoBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // labelIPValue
@@ -92,12 +95,17 @@ namespace IP
             // 
             // comboBoxLine
             // 
+            this.comboBoxLine.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.comboBoxLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.comboBoxLine.FormattingEnabled = true;
             this.comboBoxLine.Location = new System.Drawing.Point(190, 199);
             this.comboBoxLine.Name = "comboBoxLine";
             this.comboBoxLine.Size = new System.Drawing.Size(160, 26);
             this.comboBoxLine.TabIndex = 9;
+            // 
+            // lineInfoBindingSource
+            // 
+            this.lineInfoBindingSource.DataSource = typeof(IP.LineInfo);
             // 
             // AdminCorrectLineForm
             // 
@@ -117,6 +125,8 @@ namespace IP
             this.Name = "AdminCorrectLineForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "EmployeeInfoForm";
+            //this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            ((System.ComponentModel.ISupportInitialize)(this.lineInfoBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -129,5 +139,9 @@ namespace IP
         private Label labelDateTime;
         private Label labelChooseLine;
         private ComboBox comboBoxLine;
+        private DataGridViewTextBoxColumn statusDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn idDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn checklineDataGridViewTextBoxColumn;
+        private BindingSource lineInfoBindingSource;
     }
 }

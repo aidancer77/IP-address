@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace IP
 {
@@ -30,24 +31,12 @@ namespace IP
         /// </summary>
         private void InitializeComponent()
         {
-            this.labelAttachPass = new System.Windows.Forms.Label();
             this.labelIPValue = new System.Windows.Forms.Label();
             this.labelDateTime = new System.Windows.Forms.Label();
-            this.buttonLabelPassword = new IP.RoundedButton();
             this.labelLineResultAuth = new System.Windows.Forms.Label();
+            this.buttonLabelCard = new IP.RoundedButton();
+            this.buttonLabelPassword = new IP.RoundedButton();
             this.SuspendLayout();
-            // 
-            // labelAttachPass
-            // 
-            this.labelAttachPass.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.labelAttachPass.AutoSize = true;
-            this.labelAttachPass.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelAttachPass.Location = new System.Drawing.Point(133, 183);
-            this.labelAttachPass.Name = "labelAttachPass";
-            this.labelAttachPass.Size = new System.Drawing.Size(293, 20);
-            this.labelAttachPass.TabIndex = 4;
-            this.labelAttachPass.Text = "Для авторизации приложите пропуск";
-            this.labelAttachPass.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // labelIPValue
             // 
@@ -73,6 +62,35 @@ namespace IP
             this.labelDateTime.Text = "Date&Time";
             this.labelDateTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // labelLineResultAuth
+            // 
+            this.labelLineResultAuth.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelLineResultAuth.AutoSize = true;
+            this.labelLineResultAuth.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelLineResultAuth.Location = new System.Drawing.Point(255, 107);
+            this.labelLineResultAuth.Name = "labelLineResultAuth";
+            this.labelLineResultAuth.Size = new System.Drawing.Size(43, 20);
+            this.labelLineResultAuth.TabIndex = 7;
+            this.labelLineResultAuth.Text = "Line";
+            this.labelLineResultAuth.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // buttonLabelCard
+            // 
+            this.buttonLabelCard.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.buttonLabelCard.BackColor = System.Drawing.Color.CadetBlue;
+            this.buttonLabelCard.CornerRadius = 15;
+            this.buttonLabelCard.FlatAppearance.BorderColor = System.Drawing.Color.CadetBlue;
+            this.buttonLabelCard.FlatAppearance.BorderSize = 0;
+            this.buttonLabelCard.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonLabelCard.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.buttonLabelCard.Location = new System.Drawing.Point(190, 197);
+            this.buttonLabelCard.Name = "buttonLabelCard";
+            this.buttonLabelCard.Size = new System.Drawing.Size(170, 35);
+            this.buttonLabelCard.TabIndex = 8;
+            this.buttonLabelCard.Text = "Вход по пропуску";
+            this.buttonLabelCard.UseVisualStyleBackColor = true;
+            this.buttonLabelCard.Click += new System.EventHandler(this.ButtonLabelCard_Click);
+            // 
             // buttonLabelPassword
             // 
             this.buttonLabelPassword.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -90,29 +108,17 @@ namespace IP
             this.buttonLabelPassword.UseVisualStyleBackColor = false;
             this.buttonLabelPassword.Click += new System.EventHandler(this.ButtonLabelPassword_Click);
             // 
-            // labelLineResultAuth
-            // 
-            this.labelLineResultAuth.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.labelLineResultAuth.AutoSize = true;
-            this.labelLineResultAuth.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelLineResultAuth.Location = new System.Drawing.Point(255, 107);
-            this.labelLineResultAuth.Name = "labelLineResultAuth";
-            this.labelLineResultAuth.Size = new System.Drawing.Size(39, 20);
-            this.labelLineResultAuth.TabIndex = 7;
-            this.labelLineResultAuth.Text = "132";
-            this.labelLineResultAuth.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // AuthorizationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(569, 410);
             this.ControlBox = false;
+            this.Controls.Add(this.buttonLabelCard);
             this.Controls.Add(this.labelLineResultAuth);
             this.Controls.Add(this.labelDateTime);
             this.Controls.Add(this.labelIPValue);
             this.Controls.Add(this.buttonLabelPassword);
-            this.Controls.Add(this.labelAttachPass);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MinimizeBox = false;
@@ -121,14 +127,15 @@ namespace IP
             this.Text = "EmployeeInfoForm";
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         #endregion
 
         private RoundedButton buttonLabelPassword;
-        private Label labelAttachPass;
         private Label labelIPValue;
         private Label labelDateTime;
         private Label labelLineResultAuth;
+        private RoundedButton buttonLabelCard;
     }
 }
