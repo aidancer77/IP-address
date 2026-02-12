@@ -15,13 +15,41 @@ namespace IP
     {
         private bool continueReading = true;
         private Thread readThread;
+        private bool isFormClosing = false;
 
         public AdminForm()
         {
             InitializeComponent();
+
+            this.FormClosing += AdminForm_FormClosing;
+            this.FormClosed += AdminForm_FormClosed;
+            this.VisibleChanged += AdminForm_VisibleChanged;
+
             StartAdminCardCheck();
             GetIPAddress();
             SetTimer();
+        }
+
+        private void AdminForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            isFormClosing = true;
+
+            // Останавливаем чтение, но НЕ закрываем порт полностью
+            SerialPortManager.StopReading();
+
+            continueReading = false;
+            if (readThread != null && readThread.IsAlive)
+            {
+                if (!readThread.Join(500))
+                {
+                    Console.WriteLine("Поток администратора не завершился");
+                }
+            }
+        }
+
+        private void AdminForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            isFormClosing = true;
         }
 
         private void StartAdminCardCheck()
@@ -31,7 +59,7 @@ namespace IP
 
             if (!portInitialized)
             {
-                MessageBox.Show("Не удалось инициализировать COM-порт для администратора.\n" +
+                Console.WriteLine("Не удалось инициализировать COM-порт для администратора.\n" +
                               "Возможно порт занят или недоступен.",
                               "Ошибка",
                               MessageBoxButtons.OK,
@@ -44,7 +72,7 @@ namespace IP
 
                 readThread = new Thread(() =>
                 {
-                    while (continueReading)
+                    while (continueReading && !isFormClosing)
                     {
                         // Периодически проверяем состояние порта
                         Thread.Sleep(500);
@@ -59,6 +87,8 @@ namespace IP
         {
             try
             {
+                if (isFormClosing) return;
+
                 string hexValue = message.Replace(" ", String.Empty);
                 int commaIndex = hexValue.IndexOf(",");
                 if (commaIndex > 0)
@@ -77,13 +107,22 @@ namespace IP
 
                 if (lineInfo != null && hexValue == lineInfo.Admin)
                 {
-                    this.Invoke(new Action(() =>
+                    if (this.IsHandleCreated && !isFormClosing)
                     {
-                        // Переходим к форме выбора линии
-                        AdminCorrectLineForm adminCorrectLineForm = new AdminCorrectLineForm();
-                        this.Hide();
-                        adminCorrectLineForm.Show();
-                    }));
+                        this.Invoke(new Action(() =>
+                        {
+                            if (!isFormClosing)
+                            {
+                                // Останавливаем чтение перед переходом
+                                SerialPortManager.StopReading();
+
+                                // Переходим к форме выбора линии
+                                AdminCorrectLineForm adminCorrectLineForm = new AdminCorrectLineForm();
+                                this.Hide();
+                                adminCorrectLineForm.Show();
+                            }
+                        }));
+                    }
                 }
                 // Если это не карта администратора, игнорируем
             }
@@ -100,7 +139,8 @@ namespace IP
             FormTimer.Interval = 1000;
             FormTimer.Tick += (s, e) =>
             {
-                labelDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+                if (labelDateTime != null && !isFormClosing && this.IsHandleCreated)
+                    labelDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
             };
             FormTimer.Start();
         }
@@ -108,7 +148,8 @@ namespace IP
         private void GetIPAddress()
         {
             string localIP = GetLocalIPv4Address();
-            labelIPValue.Text = localIP;
+            if (labelIPValue != null)
+                labelIPValue.Text = localIP;
         }
 
         private string GetLocalIPv4Address()
@@ -158,7 +199,7 @@ namespace IP
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки настроек: {ex.Message}",
+                Console.WriteLine($"Ошибка загрузки настроек: {ex.Message}",
                               "Ошибка",
                               MessageBoxButtons.OK,
                               MessageBoxIcon.Error);
@@ -176,15 +217,14 @@ namespace IP
                 // Сравниваем с Admin из LineInfo
                 if (textBoxPassword.Text == lineInfo.Admin)
                 {
-                    // Останавливаем поток чтения администратора
+                    // Останавливаем чтение администратора
+                    SerialPortManager.StopReading();
+
                     continueReading = false;
                     if (readThread != null && readThread.IsAlive)
                     {
                         readThread.Join(100);
                     }
-
-                    // Останавливаем чтение из порта
-                    SerialPortManager.StopReading();
 
                     // Переходим к форме выбора линии
                     AdminCorrectLineForm adminCorrectLineForm = new AdminCorrectLineForm();
@@ -210,15 +250,14 @@ namespace IP
 
         private void ButtonLabelBack_Click(object sender, EventArgs e)
         {
-            // Останавливаем поток чтения администратора
+            // Останавливаем чтение администратора
+            SerialPortManager.StopReading();
+
             continueReading = false;
             if (readThread != null && readThread.IsAlive)
             {
                 readThread.Join(100);
             }
-
-            // Сбрасываем обработчик порта
-            SerialPortManager.InitializePort(null);
 
             // Возвращаемся к форме авторизации
             AuthorizationForm authorizationForm = new AuthorizationForm();
@@ -226,26 +265,26 @@ namespace IP
             authorizationForm.Show();
         }
 
-        private void AdminForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // Останавливаем чтение администратора
-            continueReading = false;
-            if (readThread != null && readThread.IsAlive)
-            {
-                readThread.Join(100);
-            }
-
-            // Не закрываем SerialPortManager полностью, только останавливаем чтение
-            SerialPortManager.StopReading();
-        }
-
         private void AdminForm_VisibleChanged(object sender, EventArgs e)
         {
-            if (this.Visible)
+            if (this.Visible && !isFormClosing)
             {
                 // При повторном показе формы возобновляем проверку карт администратора
                 continueReading = true;
                 SerialPortManager.InitializePort(ProcessAdminCardData);
+
+                if (readThread == null || !readThread.IsAlive)
+                {
+                    readThread = new Thread(() =>
+                    {
+                        while (continueReading && !isFormClosing)
+                        {
+                            Thread.Sleep(500);
+                        }
+                    });
+                    readThread.IsBackground = true;
+                    readThread.Start();
+                }
             }
         }
 

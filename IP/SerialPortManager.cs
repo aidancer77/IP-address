@@ -13,7 +13,8 @@ namespace IP
         private static Thread readThread = null;
         private static bool continueReading = false;
         private static Action<string> onDataReceived = null;
-        private static object lockObject = new object(); // Добавляем lock для потокобезопасности
+        private static object lockObject = new object();
+        private static bool isDisposing = false;
 
         public static bool InitializePort(Action<string> dataReceivedCallback = null)
         {
@@ -21,32 +22,45 @@ namespace IP
             {
                 try
                 {
-                    if (isPortInitialized && port_COM7 != null && port_COM7.IsOpen)
+                    // Если порт уже инициализирован и открыт
+                    if (port_COM7 != null && port_COM7.IsOpen)
                     {
-                        // Порт уже открыт, просто обновляем колбэк
                         onDataReceived = dataReceivedCallback;
+
+                        // Убеждаемся, что поток чтения работает
+                        if (readThread == null || !readThread.IsAlive)
+                        {
+                            StartReading();
+                        }
+
+                        Console.WriteLine("COM7 порт уже инициализирован и открыт");
                         return true;
                     }
 
-                    // Закрываем старый порт, если он существует
-                    ClosePort();
+                    ClosePortInternal();
 
-                    // Создаем новый порт
                     port_COM7 = new SerialPort("COM7", 9600, Parity.None, 8, StopBits.One)
                     {
                         Handshake = Handshake.None,
-                        ReadTimeout = 500,
-                        WriteTimeout = 500,
-                        RtsEnable = true, // Добавляем для стабильности
-                        DtrEnable = true  // Добавляем для стабильности
+                        ReadTimeout = 1000,
+                        WriteTimeout = 1000,
+                        RtsEnable = true,
+                        DtrEnable = true,
+                        NewLine = "\r\n"
                     };
 
                     port_COM7.Open();
+                    port_COM7.DiscardInBuffer();
+                    port_COM7.DiscardOutBuffer();
+
                     isPortInitialized = true;
                     onDataReceived = dataReceivedCallback;
+                    isDisposing = false;
 
                     // Запускаем поток чтения
                     StartReading();
+
+                    MessageBox.Show("COM7 порт успешно инициализирован");
                     return true;
                 }
                 catch (UnauthorizedAccessException ex)
@@ -74,18 +88,20 @@ namespace IP
         {
             lock (lockObject)
             {
-                continueReading = true;
-
                 // Останавливаем старый поток, если он работает
                 if (readThread != null && readThread.IsAlive)
                 {
                     continueReading = false;
-                    if (!readThread.Join(500))
+
+                    // Ждем завершения потока
+                    if (!readThread.Join(1000))
                     {
-                        readThread.Abort(); // Принудительно прерываем, если не завершается
+                        Console.WriteLine("Поток чтения не завершился, продолжаем работу");
                     }
+                    readThread = null;
                 }
 
+                continueReading = true;
                 readThread = new Thread(ReadFromPort);
                 readThread.IsBackground = true;
                 readThread.Name = "COM7-ReadThread";
@@ -95,38 +111,46 @@ namespace IP
 
         private static void ReadFromPort()
         {
-            while (continueReading)
+            while (continueReading && !isDisposing)
             {
                 try
                 {
-                    if (port_COM7 == null || !port_COM7.IsOpen)
+                    if (port_COM7 == null || !port_COM7.IsOpen || isDisposing)
                     {
                         Thread.Sleep(100);
                         continue;
                     }
 
-                    string message = port_COM7.ReadLine();
-
-                    // Вызываем колбэк, если он установлен
-                    if (onDataReceived != null && !string.IsNullOrEmpty(message))
+                    // Проверяем, есть ли данные для чтения
+                    if (port_COM7.BytesToRead > 0)
                     {
-                        try
+                        string message = port_COM7.ReadLine().Trim();
+
+                        if (onDataReceived != null && !string.IsNullOrEmpty(message))
                         {
-                            onDataReceived.Invoke(message);
+                            try
+                            {
+                                onDataReceived.Invoke(message);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Ошибка в колбэке обработки данных: {ex.Message}");
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Ошибка в колбэке обработки данных: {ex.Message}");
-                        }
+                    }
+                    else
+                    {
+                        Thread.Sleep(50);
                     }
                 }
                 catch (TimeoutException)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(50);
                 }
                 catch (InvalidOperationException)
                 {
-                    // Порт был закрыт
+                    // Порт был закрыт - выходим из цикла
+                    MessageBox.Show("Порт закрыт, завершаем поток чтения");
                     break;
                 }
                 catch (Exception ex)
@@ -135,6 +159,8 @@ namespace IP
                     Thread.Sleep(100);
                 }
             }
+
+            Console.WriteLine("Поток чтения COM7 завершен");
         }
 
         public static void StopReading()
@@ -147,9 +173,37 @@ namespace IP
                 {
                     if (!readThread.Join(500))
                     {
-                        readThread.Abort();
+                        Console.WriteLine("Поток чтения не завершился в указанное время");
                     }
+                    readThread = null;
                 }
+            }
+        }
+
+        private static void ClosePortInternal()
+        {
+            try
+            {
+                // Сначала останавливаем чтение
+                StopReading();
+
+                if (port_COM7 != null)
+                {
+                    if (port_COM7.IsOpen)
+                    {
+                        port_COM7.DiscardInBuffer();
+                        port_COM7.DiscardOutBuffer();
+                        port_COM7.Close();
+                        MessageBox.Show("COM7 порт закрыт");
+                    }
+
+                    port_COM7.Dispose();
+                    port_COM7 = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при закрытии порта: {ex.Message}");
             }
         }
 
@@ -157,41 +211,17 @@ namespace IP
         {
             lock (lockObject)
             {
-                StopReading();
-
-                if (port_COM7 != null)
-                {
-                    try
-                    {
-                        if (port_COM7.IsOpen)
-                        {
-                            port_COM7.Close();
-                            Console.WriteLine("COM7 порт закрыт");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Ошибка закрытия порта: {ex.Message}");
-                    }
-
-                    try
-                    {
-                        port_COM7.Dispose();
-                    }
-                    catch { }
-
-                    port_COM7 = null;
-                }
-
-                isPortInitialized = false;
+                isDisposing = true;
                 onDataReceived = null;
+                isPortInitialized = false;
+
+                ClosePortInternal();
+
+                isDisposing = false;
+                Console.WriteLine("COM7 порт полностью закрыт и освобожден");
             }
         }
 
-        public static bool IsPortInitialized => isPortInitialized;
-        public static bool IsPortOpen => port_COM7 != null && port_COM7.IsOpen;
-
-        // Новый метод для переподключения
         public static bool ReinitializePort(Action<string> dataReceivedCallback = null)
         {
             lock (lockObject)
@@ -201,5 +231,8 @@ namespace IP
                 return InitializePort(dataReceivedCallback);
             }
         }
+
+        public static bool IsPortInitialized => isPortInitialized;
+        public static bool IsPortOpen => port_COM7 != null && port_COM7.IsOpen;
     }
 }

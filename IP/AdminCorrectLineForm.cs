@@ -75,7 +75,7 @@ namespace IP
             }
 
             string selectedLineName = comboBoxLine.Text;
-            int selectedLinelineId = GetLineIdFromName(selectedLineName);
+            int selectedLinelineId = Lines.GetLineIdFromName(selectedLineName);
 
             // Загружаем существующие настройки или создаем новые
             LineInfo lineInfo = LoadOrCreateLineInfo();
@@ -93,19 +93,16 @@ namespace IP
                 JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true };
                 string jsonString = System.Text.Json.JsonSerializer.Serialize(lineInfo, options);
                 File.WriteAllText(jsonFilePath, jsonString, System.Text.Encoding.UTF8);
-
-                MessageBox.Show($"Линия \"{selectedLineName}\" успешно выбрана и сохранена!",
-                              "Успешно", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка сохранения настроек: {ex.Message}", "Ошибка",
+                Console.WriteLine($"Ошибка сохранения настроек: {ex.Message}", "Ошибка",
                               MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             // Создаем форму авторизации
-            AuthorizationForm authorizationForm = new AuthorizationForm(selectedLineName, selectedLinelineId);
+            AuthorizationForm authorizationForm = new AuthorizationForm();
             this.Hide();
             authorizationForm.Show();
         }
@@ -122,7 +119,6 @@ namespace IP
                     string jsonContent = File.ReadAllText(jsonFilePath);
                     var existingInfo = JsonConvert.DeserializeObject<LineInfo>(jsonContent);
 
-                    // Если файл существует, используем существующие настройки
                     if (existingInfo != null)
                     {
                         return existingInfo;
@@ -137,14 +133,12 @@ namespace IP
             // Создаем новые настройки с дефолтными значениями
             return new LineInfo
             {
-                Admin = "220832", // Дефолтный пароль администратора
-                Server = "192.168.77.74:8181", // Дефолтный сервер
-                Timer = 2 // Дефолтный таймер
-                          // LineId и LineName будут установлены позже
+                Admin = "220832",
+                Server = "192.168.77.74:8181",
+                Timer = 5
             };
         }
 
-        // Также обновите метод LoadExistingSettings, чтобы отображать сохраненную линию:
         private void LoadExistingSettings()
         {
             try
@@ -173,41 +167,6 @@ namespace IP
             }
         }
 
-        private int GetLineIdFromName(string lineName)
-        {
-            if (string.IsNullOrEmpty(lineName))
-                return 0;
-
-            // Используем словарь для более чистой реализации
-            var lineMappings = new Dictionary<string, int>
-    {
-        { "Боссар 1", 1 },
-        { "Боссар 2", 2 },
-        { "Боссар 3", 3 },
-        { "Боссар 5", 4 },
-        { "Боссар 8", 5 },
-        { "Боссар 9", 6 },
-        { "Боссар 10", 7 },
-        { "Боссар 11", 8 },
-        { "Боссар 13", 9 },
-        { "Волпак 3", 10 },
-        { "Боссар 6", 11 },
-        { "Боссар 7", 12 },
-        { "Боссар 12", 13 },
-        { "Меспак", 14 },
-        { "Волпак 2", 15 },
-        { "Волпак 1", 16 },
-        { "Волпак 4", 17 },
-        { "Боссар 4", 18 },
-        { "Стеклобанка", 19 },
-        { "ЛМ 1", 20 },
-        { "ЛМ 3", 21 },
-        { "ЛМ 4", 22 },
-        { "ЛК 3", 23 }
-    };
-
-            return lineMappings.TryGetValue(lineName, out int lineId) ? lineId : 0;
-        }
         private void ComboBoxLineValue()
         {
             Lines lines = new Lines();

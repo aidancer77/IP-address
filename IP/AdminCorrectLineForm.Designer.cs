@@ -125,7 +125,7 @@ namespace IP
             this.Name = "AdminCorrectLineForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "EmployeeInfoForm";
-            //this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             ((System.ComponentModel.ISupportInitialize)(this.lineInfoBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

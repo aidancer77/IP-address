@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 
 namespace IP
 {
-    internal class LineInfo
+    public class LineInfo
     {
         public string Admin { get; set; }
         public string Server { get; set; }
@@ -11,17 +10,13 @@ namespace IP
         public int LineId { get; set; }
         public string LineName { get; set; }
 
-        // Пустой конструктор для десериализации
-        public LineInfo() { }
-
-        // Конструктор с параметрами
-        public LineInfo(string admin, string server, int timer, int lineId, string lineName)
+        public LineInfo()
         {
-            Admin = admin;
-            Server = server;
-            Timer = timer;
-            LineId = lineId;
-            LineName = lineName;
+            Admin = "220832";
+            Server = "192.168.77.74:8181";
+            Timer = 5;
+            LineId = 0;
+            LineName = "";
         }
     }
 }

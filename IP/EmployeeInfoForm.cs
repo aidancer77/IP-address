@@ -14,6 +14,7 @@ namespace IP
     {
         private string selectedLineName;
         private Timer MyTimer;
+        private bool isFormClosing = false;
 
         // Данные сотрудника
         private string employeeName = "";
@@ -29,6 +30,9 @@ namespace IP
         public EmployeeInfoForm(string line, string name, string dept, string pos)
         {
             InitializeComponent();
+
+            this.FormClosing += EmployeeInfoForm_FormClosing;
+            this.FormClosed += EmployeeInfoForm_FormClosed;
 
             selectedLineName = line;
             employeeName = name;
@@ -63,7 +67,6 @@ namespace IP
             // Остальная инициализация
             GetIPAddress();
             SetTimer();
-            //StartAutoCloseTimer();
         }
 
         // Метод для установки данных после создания формы
@@ -74,53 +77,35 @@ namespace IP
             position = pos;
 
             // Если форма уже загружена, обновляем сразу
-            if (this.IsHandleCreated)
+            if (this.IsHandleCreated && !isFormClosing && !this.IsDisposed)
             {
-                if (textBoxName.InvokeRequired)
-                {
-                    textBoxName.Invoke(new Action(() =>
-                    {
-                        textBoxName.Text = name;
-                        textBoxDepartment.Text = dept;
-                        textBoxPosition.Text = pos;
-                    }));
-                }
-                else
-                {
-                    textBoxName.Text = name;
-                    textBoxDepartment.Text = dept;
-                    textBoxPosition.Text = pos;
-                }
+                UpdateEmployeeTextboxes(name, dept, pos);
             }
         }
 
-        private void StartAutoCloseTimer()
-        {
-            AuthorizationForm authorizationForm = new AuthorizationForm();
+        //private void StartAutoCloseTimer()
+        //{
+        //    AuthorizationForm authorizationForm = new AuthorizationForm();
 
-            MyTimer = new Timer();
+        //    MyTimer = new Timer();
 
-            string appFolder = AppDomain.CurrentDomain.BaseDirectory;
-            string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
-            string jsonContent = File.ReadAllText(jsonFilePath);
+        //    JsonDocument jsonDocServer = JsonDocument.Parse(Lines.jsonContent);
+        //    JsonElement rootServer = jsonDocServer.RootElement;
 
-            JsonDocument jsonDocServer = JsonDocument.Parse(jsonContent);
-            JsonElement rootServer = jsonDocServer.RootElement;
+        //    int exitTimer = Int16.Parse(rootServer.GetProperty("Timer").ToString());
 
-            int exitTimer = Int16.Parse(rootServer.GetProperty("Timer").ToString());
+        //    MyTimer.Interval = exitTimer * 1000 * 60;
+        //    MyTimer.Tick += (sender, e) =>
+        //    {
+        //        MyTimer.Stop();
+        //        MyTimer.Dispose();
 
-            MyTimer.Interval = exitTimer * 1000;
-            MyTimer.Tick += (sender, e) =>
-            {
-                MyTimer.Stop();
-                MyTimer.Dispose();
+        //        this.Hide();
+        //        authorizationForm.Show();
+        //    };
 
-                this.Hide();
-                authorizationForm.Show();
-            };
-
-            MyTimer.Start();
-        }
+        //    MyTimer.Start();
+        //}
 
         private void EmployeeInfoForm_Load(object sender, EventArgs e)
         {
@@ -142,33 +127,95 @@ namespace IP
             else
             {
                 this.WindowState = FormWindowState.Minimized;
+
                 if (MyTimer != null)
                 {
                     MyTimer.Stop();
+                    MyTimer.Dispose();
                 }
+
+                MyTimer = new Timer();
+
+                JsonDocument jsonDocServer = JsonDocument.Parse(Lines.jsonContent);
+                JsonElement rootServer = jsonDocServer.RootElement;
+
+                int exitTimer = Int16.Parse(rootServer.GetProperty("Timer").ToString());
+
+                MyTimer.Interval = exitTimer * 1000;
+                MyTimer.Tick += TimerTickHandler;
+
+                MyTimer.Start();
             }
+        }
+
+        private async void TimerTickHandler(object sender, EventArgs e)
+        {
+            MyTimer.Stop();
+            MyTimer.Dispose();
+
+            JsonDocument jsonDocServer = JsonDocument.Parse(Lines.jsonContent);
+            JsonElement rootServer = jsonDocServer.RootElement;
+
+            JsonDocument jsonDocLineId = JsonDocument.Parse(Lines.jsonContent);
+            JsonElement rootLineId = jsonDocLineId.RootElement;
+
+            string server = rootServer.GetProperty("Server").GetString();
+            int lineId = Int16.Parse(rootLineId.GetProperty("LineId").ToString());
+
+            string urlLineIdInfo = $"http://{server}/operators/checkLine?lineId={lineId}";
+
+            string textBoxLineIdInfo = await GetJSONFromURL(urlLineIdInfo);
+
+            if(textBoxLineIdInfo=="")
+            {
+                AuthorizationForm authorizationForm = new AuthorizationForm();
+                this.Hide();
+                authorizationForm.Show();
+
+                MessageBox.Show("Линия не запущена. Пожалуйста, повторите авторизацию");
+            }
+
         }
 
         private void EmployeeInfoForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            isFormClosing = true;
+
+            // Только останавливаем чтение, НЕ закрываем порт полностью
+            SerialPortManager.StopReading();
+
             if (MyTimer != null)
             {
                 MyTimer.Stop();
                 MyTimer.Dispose();
             }
         }
+
+        private void EmployeeInfoForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            isFormClosing = true;
+        }
+
         private void InitializeSerialPort()
         {
             bool initialized = SerialPortManager.InitializePort(ProcessCardData);
 
             if (!initialized)
             {
-                MessageBox.Show("Не удалось инициализировать COM-порт");
+                MessageBox.Show("Не удалось инициализировать COM-порт. Чтение карт будет недоступно.",
+                              "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
         private async void ProcessCardInUI(string hexValue)
         {
+            // Проверяем, что форма еще не закрывается
+            if (isFormClosing || this.IsDisposed || !this.IsHandleCreated)
+            {
+                Console.WriteLine("Форма закрывается, пропускаем обработку карты");
+                return;
+            }
+
             try
             {
                 string lineName = selectedLineName;
@@ -179,26 +226,18 @@ namespace IP
                     lineName = lineInfo.LineName;
                 }
 
-                LineInfo lineInfoSettings = new LineInfo();
-
                 SerialPortManager.StopReading();
 
-                Cursor.Current = Cursors.WaitCursor;
-
-                string appFolder = AppDomain.CurrentDomain.BaseDirectory;
-                string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
-                string jsonContent = File.ReadAllText(jsonFilePath);
-
-                JsonDocument jsonDocServer = JsonDocument.Parse(jsonContent);
+                JsonDocument jsonDocServer = JsonDocument.Parse(Lines.jsonContent);
                 JsonElement rootServer = jsonDocServer.RootElement;
 
+                JsonDocument jsonDocLineId = JsonDocument.Parse(Lines.jsonContent);
+                JsonElement rootLineId = jsonDocLineId.RootElement;
+
                 string server = rootServer.GetProperty("Server").GetString();
+                int lineId = Int16.Parse(rootLineId.GetProperty("LineId").ToString());
 
-                // ВАЖНО: Используем lineName из параметров, а не жесткое "4"
-                // Нужно получить LineId для выбранной линии
-                //int lineId = GetLineIdFromName(lineName);
-
-                string urlEmplInfo = $"http://{server}/operators/checkCard?line=4&codekey={hexValue}";
+                string urlEmplInfo = $"http://{server}/operators/checkCard?line={lineId}&codekey={hexValue}";
 
                 string textBoxEmplInfo = await GetJSONFromURL(urlEmplInfo);
 
@@ -222,26 +261,29 @@ namespace IP
                     catch (JsonException jsonEx)
                     {
                         ClearEmployeeTextboxes();
-
                         SerialPortManager.ReinitializePort(ProcessCardData);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Карта не распознана или сервер недоступен", "Ошибка",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    if (!isFormClosing && this.IsHandleCreated)
+                    {
+                        MessageBox.Show("Карта не распознана или сервер недоступен", "Ошибка",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
 
                     ClearEmployeeTextboxes();
-
                     SerialPortManager.ReinitializePort(ProcessCardData);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка обработки карты: {ex.Message}");
+                if (!isFormClosing && this.IsHandleCreated)
+                {
+                    MessageBox.Show($"Ошибка обработки карты: {ex.Message}");
+                }
 
                 ClearEmployeeTextboxes();
-
                 SerialPortManager.ReinitializePort(ProcessCardData);
             }
             finally
@@ -252,13 +294,19 @@ namespace IP
 
         private void UpdateEmployeeTextboxes(string name, string dept, string pos)
         {
+            if (isFormClosing || this.IsDisposed || !this.IsHandleCreated)
+                return;
+
             if (textBoxName.InvokeRequired)
             {
                 textBoxName.Invoke(new Action(() =>
                 {
-                    textBoxName.Text = name;
-                    textBoxDepartment.Text = dept;
-                    textBoxPosition.Text = pos;
+                    if (!isFormClosing && !this.IsDisposed && this.IsHandleCreated)
+                    {
+                        textBoxName.Text = name;
+                        textBoxDepartment.Text = dept;
+                        textBoxPosition.Text = pos;
+                    }
                 }));
             }
             else
@@ -278,6 +326,13 @@ namespace IP
         {
             try
             {
+                // Проверяем, что форма еще не закрывается и не уничтожена
+                if (isFormClosing || this.IsDisposed || !this.IsHandleCreated)
+                {
+                    MessageBox.Show("Форма не готова к обработке карты");
+                    return;
+                }
+
                 string hexValue = message.Replace(" ", String.Empty);
                 int commaIndex = hexValue.IndexOf(",");
                 if (commaIndex > 0)
@@ -291,24 +346,27 @@ namespace IP
                     hexValue = hexValue.Substring(equalsIndex + 1);
                 }
 
-                // Проверяем, что hex не пустой
                 if (string.IsNullOrEmpty(hexValue))
                 {
                     return;
                 }
 
                 // ВСЕ операции с UI должны быть в UI потоке
-                if (this.IsHandleCreated && !this.IsDisposed)
+                if (this.IsHandleCreated && !this.IsDisposed && !isFormClosing)
                 {
                     this.BeginInvoke(new Action(() =>
                     {
-                        ProcessCardInUI(hexValue);
+                        // Проверяем еще раз перед выполнением
+                        if (!isFormClosing && !this.IsDisposed && this.IsHandleCreated)
+                        {
+                            ProcessCardInUI(hexValue);
+                        }
                     }));
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка обработки карты: {ex.Message}");
+                MessageBox.Show($"Ошибка обработки карты: {ex.Message}");
             }
         }
 
@@ -338,16 +396,19 @@ namespace IP
 
         private void ButtonBack_Click(object sender, EventArgs e)
         {
+            isFormClosing = true;
+
+            // Только останавливаем чтение
+            SerialPortManager.StopReading();
+
             AuthorizationForm authorizationForm = new AuthorizationForm();
 
             ClearEmployeeTextboxes();
             this.Hide();
             authorizationForm.Show();
+
+
         }
-
-
-
-
 
         private void SetTimer()
         {
@@ -355,7 +416,7 @@ namespace IP
             FormTimer.Interval = 1000;
             FormTimer.Tick += (s, e) =>
             {
-                if (labelDateTime != null)
+                if (labelDateTime != null && !isFormClosing && this.IsHandleCreated)
                     labelDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
             };
             FormTimer.Start();
