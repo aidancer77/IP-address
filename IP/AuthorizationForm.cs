@@ -2,10 +2,7 @@
 using System;
 using System.IO;
 using System.Net;
-using System.Net.Http;
 using System.Net.Sockets;
-using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace IP
@@ -58,7 +55,6 @@ namespace IP
                 string appFolder = AppDomain.CurrentDomain.BaseDirectory;
                 string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
 
-                // Если файла нет - создаем с настройками по умолчанию
                 if (!File.Exists(jsonFilePath))
                 {
                     var defaultSettings = new
@@ -67,7 +63,8 @@ namespace IP
                         Server = "192.168.77.74:8181",
                         Timer = 5,
                         LineId = 0,
-                        LineName = ""
+                        LineName = "",
+                        COMNum = "COM7"
                     };
 
                     string jsonString = JsonConvert.SerializeObject(defaultSettings, Formatting.Indented);
@@ -78,11 +75,9 @@ namespace IP
                 string jsonContent = File.ReadAllText(jsonFilePath);
                 var settings = JsonConvert.DeserializeObject<dynamic>(jsonContent);
 
-                // Получаем данные
                 selectedLineId = (int)(settings.LineId ?? 0);
                 selectedLineName = (string)(settings.LineName ?? "");
 
-                // Если LineInfo использует Newtonsoft.Json атрибуты
                 return JsonConvert.DeserializeObject<LineInfo>(jsonContent);
             }
             catch (Exception ex)
@@ -151,7 +146,6 @@ namespace IP
             {
                 try
                 {
-                    // Создаем EmployeeInfoForm с выбранной линией
                     EmployeeInfoForm employeeForm = new EmployeeInfoForm(selectedLineName);
 
                     // Инициализируем COM-порт с callback-ом от новой формы

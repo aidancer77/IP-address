@@ -48,9 +48,5 @@ namespace IP
 
             return lineMappings.TryGetValue(lineName, out int lineId) ? lineId : 0;
         }
-
-        public static string appFolder = AppDomain.CurrentDomain.BaseDirectory;
-        public static string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
-        public static string jsonContent = File.ReadAllText(jsonFilePath);
     }
 }

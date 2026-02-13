@@ -20,36 +20,9 @@ namespace IP
         public AdminForm()
         {
             InitializeComponent();
-
-            this.FormClosing += AdminForm_FormClosing;
-            this.FormClosed += AdminForm_FormClosed;
-            this.VisibleChanged += AdminForm_VisibleChanged;
-
             StartAdminCardCheck();
             GetIPAddress();
             SetTimer();
-        }
-
-        private void AdminForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            isFormClosing = true;
-
-            // Останавливаем чтение, но НЕ закрываем порт полностью
-            SerialPortManager.StopReading();
-
-            continueReading = false;
-            if (readThread != null && readThread.IsAlive)
-            {
-                if (!readThread.Join(500))
-                {
-                    Console.WriteLine("Поток администратора не завершился");
-                }
-            }
-        }
-
-        private void AdminForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            isFormClosing = true;
         }
 
         private void StartAdminCardCheck()
@@ -209,15 +182,12 @@ namespace IP
 
         private void ButtonLabelPassword_Click(object sender, EventArgs e)
         {
-            // Загружаем LineInfo из JSON
             LineInfo lineInfo = LoadLineInfoFromJson();
 
             if (lineInfo != null)
             {
-                // Сравниваем с Admin из LineInfo
                 if (textBoxPassword.Text == lineInfo.Admin)
                 {
-                    // Останавливаем чтение администратора
                     SerialPortManager.StopReading();
 
                     continueReading = false;
@@ -226,7 +196,6 @@ namespace IP
                         readThread.Join(100);
                     }
 
-                    // Переходим к форме выбора линии
                     AdminCorrectLineForm adminCorrectLineForm = new AdminCorrectLineForm();
                     this.Hide();
                     adminCorrectLineForm.Show();

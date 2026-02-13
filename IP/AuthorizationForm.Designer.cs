@@ -65,11 +65,10 @@ namespace IP
             // labelLineResultAuth
             // 
             this.labelLineResultAuth.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.labelLineResultAuth.AutoSize = true;
             this.labelLineResultAuth.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelLineResultAuth.Location = new System.Drawing.Point(255, 107);
+            this.labelLineResultAuth.Location = new System.Drawing.Point(216, 107);
             this.labelLineResultAuth.Name = "labelLineResultAuth";
-            this.labelLineResultAuth.Size = new System.Drawing.Size(43, 20);
+            this.labelLineResultAuth.Size = new System.Drawing.Size(147, 20);
             this.labelLineResultAuth.TabIndex = 7;
             this.labelLineResultAuth.Text = "Line";
             this.labelLineResultAuth.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -83,7 +82,7 @@ namespace IP
             this.buttonLabelCard.FlatAppearance.BorderSize = 0;
             this.buttonLabelCard.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.buttonLabelCard.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.buttonLabelCard.Location = new System.Drawing.Point(190, 197);
+            this.buttonLabelCard.Location = new System.Drawing.Point(202, 197);
             this.buttonLabelCard.Name = "buttonLabelCard";
             this.buttonLabelCard.Size = new System.Drawing.Size(170, 35);
             this.buttonLabelCard.TabIndex = 8;
@@ -100,7 +99,7 @@ namespace IP
             this.buttonLabelPassword.FlatAppearance.BorderSize = 0;
             this.buttonLabelPassword.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.buttonLabelPassword.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.buttonLabelPassword.Location = new System.Drawing.Point(190, 260);
+            this.buttonLabelPassword.Location = new System.Drawing.Point(202, 260);
             this.buttonLabelPassword.Name = "buttonLabelPassword";
             this.buttonLabelPassword.Size = new System.Drawing.Size(170, 35);
             this.buttonLabelPassword.TabIndex = 5;

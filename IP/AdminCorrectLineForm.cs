@@ -28,7 +28,7 @@ namespace IP
 
         private void SetTimer()
         {
-            System.Windows.Forms.Timer FormTimer = new System.Windows.Forms.Timer();
+            Timer FormTimer = new Timer();
             FormTimer.Interval = 1000;
             FormTimer.Tick += (s, e) =>
             {
@@ -111,12 +111,12 @@ namespace IP
         {
             string appFolder = AppDomain.CurrentDomain.BaseDirectory;
             string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
+            string jsonContent = File.ReadAllText(jsonFilePath);
 
             try
             {
                 if (File.Exists(jsonFilePath))
                 {
-                    string jsonContent = File.ReadAllText(jsonFilePath);
                     var existingInfo = JsonConvert.DeserializeObject<LineInfo>(jsonContent);
 
                     if (existingInfo != null)
@@ -130,25 +130,19 @@ namespace IP
                 Console.WriteLine($"Ошибка загрузки существующих настроек: {ex.Message}");
             }
 
-            // Создаем новые настройки с дефолтными значениями
-            return new LineInfo
-            {
-                Admin = "220832",
-                Server = "192.168.77.74:8181",
-                Timer = 5
-            };
+            return new LineInfo(); 
         }
 
         private void LoadExistingSettings()
         {
+            string appFolder = AppDomain.CurrentDomain.BaseDirectory;
+            string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
+            string jsonContent = File.ReadAllText(jsonFilePath);
+
             try
             {
-                string appFolder = AppDomain.CurrentDomain.BaseDirectory;
-                string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
-
-                if (File.Exists(jsonFilePath))
+                if (File.Exists (jsonFilePath))
                 {
-                    string jsonContent = File.ReadAllText(jsonFilePath);
                     var lineInfo = JsonConvert.DeserializeObject<LineInfo>(jsonContent);
 
                     if (lineInfo != null)

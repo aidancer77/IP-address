@@ -1,14 +1,21 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.IO.Ports;
+using System.Text.Json;
 using System.Threading;
 using System.Windows.Forms;
+using static IP.LineInfo;
 
 namespace IP
 {
     public static class SerialPortManager
     {
-        private static SerialPort port_COM7 = null;
+        //public static JsonDocument jsonDocCOMPort { get; set; }
+        //public static JsonElement rootCOMPort { get; set; }
+        //public static string comPort { get; set; }
+
+        private static SerialPort port_COM_Num = null;
         private static bool isPortInitialized = false;
         private static Thread readThread = null;
         private static bool continueReading = false;
@@ -18,12 +25,20 @@ namespace IP
 
         public static bool InitializePort(Action<string> dataReceivedCallback = null)
         {
-            lock (lockObject)
+
+            //string appFolder = AppDomain.CurrentDomain.BaseDirectory;
+            //string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
+            //string jsonContent = File.ReadAllText(jsonFilePath);
+
+            //jsonDocCOMPort = JsonDocument.Parse(jsonContent);
+            //rootCOMPort = jsonDocCOMPort.RootElement;
+            //comPort = rootCOMPort.GetProperty("COMNum").GetString();
+
             {
                 try
                 {
                     // Если порт уже инициализирован и открыт
-                    if (port_COM7 != null && port_COM7.IsOpen)
+                    if (port_COM_Num != null && port_COM_Num.IsOpen)
                     {
                         onDataReceived = dataReceivedCallback;
 
@@ -33,13 +48,14 @@ namespace IP
                             StartReading();
                         }
 
-                        Console.WriteLine("COM7 порт уже инициализирован и открыт");
+                        Console.WriteLine("COM-порт уже инициализирован и открыт");
                         return true;
                     }
 
                     ClosePortInternal();
 
-                    port_COM7 = new SerialPort("COM7", 9600, Parity.None, 8, StopBits.One)
+                    //port_COM_Num = new SerialPort(comPort, 9600, Parity.None, 8, StopBits.One)
+                    port_COM_Num = new SerialPort("COM7", 9600, Parity.None, 8, StopBits.One)
                     {
                         Handshake = Handshake.None,
                         ReadTimeout = 1000,
@@ -49,36 +65,35 @@ namespace IP
                         NewLine = "\r\n"
                     };
 
-                    port_COM7.Open();
-                    port_COM7.DiscardInBuffer();
-                    port_COM7.DiscardOutBuffer();
+                    port_COM_Num.Open();
+                    port_COM_Num.DiscardInBuffer();
+                    port_COM_Num.DiscardOutBuffer();
 
                     isPortInitialized = true;
                     onDataReceived = dataReceivedCallback;
                     isDisposing = false;
 
-                    // Запускаем поток чтения
                     StartReading();
 
-                    MessageBox.Show("COM7 порт успешно инициализирован");
+                    Console.WriteLine("COM-порт успешно инициализирован");
                     return true;
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    MessageBox.Show($"Доступ к порту COM7 запрещен: {ex.Message}\n" +
+                    Console.WriteLine($"Доступ к порту COM-порт запрещен: {ex.Message}\n" +
                                   "Возможно порт занят другой программой.\n" +
-                                  "Закройте все программы, использующие COM7, и попробуйте снова.");
+                                  "Закройте все программы, использующие COM-порт, и попробуйте снова.");
                     return false;
                 }
                 catch (IOException ex)
                 {
-                    MessageBox.Show($"Порт COM7 занят или недоступен: {ex.Message}\n" +
+                    Console.WriteLine($"Порт COM-порт занят или недоступен: {ex.Message}\n" +
                                   "Подождите несколько секунд и попробуйте снова.");
                     return false;
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка инициализации COM-порта: {ex.Message}");
+                    Console.WriteLine($"Ошибка инициализации COM-порта: {ex.Message}");
                     return false;
                 }
             }
@@ -104,7 +119,7 @@ namespace IP
                 continueReading = true;
                 readThread = new Thread(ReadFromPort);
                 readThread.IsBackground = true;
-                readThread.Name = "COM7-ReadThread";
+                readThread.Name = "COM-ReadThread";
                 readThread.Start();
             }
         }
@@ -115,16 +130,16 @@ namespace IP
             {
                 try
                 {
-                    if (port_COM7 == null || !port_COM7.IsOpen || isDisposing)
+                    if (port_COM_Num == null || !port_COM_Num.IsOpen || isDisposing)
                     {
                         Thread.Sleep(100);
                         continue;
                     }
 
                     // Проверяем, есть ли данные для чтения
-                    if (port_COM7.BytesToRead > 0)
+                    if (port_COM_Num.BytesToRead > 0)
                     {
-                        string message = port_COM7.ReadLine().Trim();
+                        string message = port_COM_Num.ReadLine().Trim();
 
                         if (onDataReceived != null && !string.IsNullOrEmpty(message))
                         {
@@ -150,7 +165,7 @@ namespace IP
                 catch (InvalidOperationException)
                 {
                     // Порт был закрыт - выходим из цикла
-                    MessageBox.Show("Порт закрыт, завершаем поток чтения");
+                    Console.WriteLine("Порт закрыт, завершаем поток чтения");
                     break;
                 }
                 catch (Exception ex)
@@ -160,7 +175,7 @@ namespace IP
                 }
             }
 
-            Console.WriteLine("Поток чтения COM7 завершен");
+            Console.WriteLine("Поток чтения COM_Num завершен");
         }
 
         public static void StopReading()
@@ -184,26 +199,25 @@ namespace IP
         {
             try
             {
-                // Сначала останавливаем чтение
                 StopReading();
 
-                if (port_COM7 != null)
+                if (port_COM_Num != null)
                 {
-                    if (port_COM7.IsOpen)
+                    if (port_COM_Num.IsOpen)
                     {
-                        port_COM7.DiscardInBuffer();
-                        port_COM7.DiscardOutBuffer();
-                        port_COM7.Close();
-                        MessageBox.Show("COM7 порт закрыт");
+                        port_COM_Num.DiscardInBuffer();
+                        port_COM_Num.DiscardOutBuffer();
+                        port_COM_Num.Close();
+                        Console.WriteLine("COM-порт закрыт");
                     }
 
-                    port_COM7.Dispose();
-                    port_COM7 = null;
+                    port_COM_Num.Dispose();
+                    port_COM_Num = null;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при закрытии порта: {ex.Message}");
+                Console.WriteLine($"Ошибка при закрытии порта: {ex.Message}");
             }
         }
 
@@ -218,7 +232,7 @@ namespace IP
                 ClosePortInternal();
 
                 isDisposing = false;
-                Console.WriteLine("COM7 порт полностью закрыт и освобожден");
+                Console.WriteLine("COM_Num порт полностью закрыт и освобожден");
             }
         }
 
@@ -233,6 +247,6 @@ namespace IP
         }
 
         public static bool IsPortInitialized => isPortInitialized;
-        public static bool IsPortOpen => port_COM7 != null && port_COM7.IsOpen;
+        public static bool IsPortOpen => port_COM_Num != null && port_COM_Num.IsOpen;
     }
 }

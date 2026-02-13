@@ -41,8 +41,8 @@ namespace IP
             this.textBoxPosition = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.labelAttachCard = new System.Windows.Forms.Label();
-            this.loginButton = new IP.RoundedButton();
             this.buttonBack = new IP.RoundedButton();
+            this.loginButton = new IP.RoundedButton();
             this.SuspendLayout();
             // 
             // labelIPValue
@@ -72,13 +72,12 @@ namespace IP
             // labelLineResultEmpl
             // 
             this.labelLineResultEmpl.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.labelLineResultEmpl.AutoSize = true;
             this.labelLineResultEmpl.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelLineResultEmpl.Location = new System.Drawing.Point(255, 107);
+            this.labelLineResultEmpl.Location = new System.Drawing.Point(216, 107);
             this.labelLineResultEmpl.Name = "labelLineResultEmpl";
-            this.labelLineResultEmpl.Size = new System.Drawing.Size(62, 20);
+            this.labelLineResultEmpl.Size = new System.Drawing.Size(147, 20);
             this.labelLineResultEmpl.TabIndex = 7;
-            this.labelLineResultEmpl.Text = "Линия";
+            this.labelLineResultEmpl.Text = "Line";
             this.labelLineResultEmpl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // textBoxName
@@ -123,23 +122,6 @@ namespace IP
             this.labelAttachCard.Text = "Приложите пропуск";
             this.labelAttachCard.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // loginButton
-            // 
-            this.loginButton.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.loginButton.BackColor = System.Drawing.Color.CadetBlue;
-            this.loginButton.CornerRadius = 15;
-            this.loginButton.FlatAppearance.BorderColor = System.Drawing.Color.CadetBlue;
-            this.loginButton.FlatAppearance.BorderSize = 0;
-            this.loginButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.loginButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.loginButton.Location = new System.Drawing.Point(214, 314);
-            this.loginButton.Name = "loginButton";
-            this.loginButton.Size = new System.Drawing.Size(160, 35);
-            this.loginButton.TabIndex = 5;
-            this.loginButton.Text = "Авторизоваться";
-            this.loginButton.UseVisualStyleBackColor = false;
-            this.loginButton.Click += new System.EventHandler(this.LoginButton_Click);
-            // 
             // buttonBack
             // 
             this.buttonBack.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -156,6 +138,23 @@ namespace IP
             this.buttonBack.Text = "Назад";
             this.buttonBack.UseVisualStyleBackColor = false;
             this.buttonBack.Click += new System.EventHandler(this.ButtonBack_Click);
+            // 
+            // loginButton
+            // 
+            this.loginButton.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.loginButton.BackColor = System.Drawing.Color.CadetBlue;
+            this.loginButton.CornerRadius = 15;
+            this.loginButton.FlatAppearance.BorderColor = System.Drawing.Color.CadetBlue;
+            this.loginButton.FlatAppearance.BorderSize = 0;
+            this.loginButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.loginButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.loginButton.Location = new System.Drawing.Point(214, 314);
+            this.loginButton.Name = "loginButton";
+            this.loginButton.Size = new System.Drawing.Size(160, 35);
+            this.loginButton.TabIndex = 5;
+            this.loginButton.Text = "Авторизоваться";
+            this.loginButton.UseVisualStyleBackColor = false;
+            this.loginButton.Click += new System.EventHandler(this.LoginButton_Click);
             // 
             // EmployeeInfoForm
             // 

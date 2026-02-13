@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 
 namespace IP
 {
@@ -9,6 +10,7 @@ namespace IP
         public int Timer { get; set; }
         public int LineId { get; set; }
         public string LineName { get; set; }
+        public string COMNum { get; set; }
 
         public LineInfo()
         {
@@ -17,6 +19,7 @@ namespace IP
             Timer = 5;
             LineId = 0;
             LineName = "";
+            COMNum = "COM7";
         }
     }
 }

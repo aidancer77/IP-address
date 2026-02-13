@@ -83,30 +83,6 @@ namespace IP
             }
         }
 
-        //private void StartAutoCloseTimer()
-        //{
-        //    AuthorizationForm authorizationForm = new AuthorizationForm();
-
-        //    MyTimer = new Timer();
-
-        //    JsonDocument jsonDocServer = JsonDocument.Parse(Lines.jsonContent);
-        //    JsonElement rootServer = jsonDocServer.RootElement;
-
-        //    int exitTimer = Int16.Parse(rootServer.GetProperty("Timer").ToString());
-
-        //    MyTimer.Interval = exitTimer * 1000 * 60;
-        //    MyTimer.Tick += (sender, e) =>
-        //    {
-        //        MyTimer.Stop();
-        //        MyTimer.Dispose();
-
-        //        this.Hide();
-        //        authorizationForm.Show();
-        //    };
-
-        //    MyTimer.Start();
-        //}
-
         private void EmployeeInfoForm_Load(object sender, EventArgs e)
         {
             // Дополнительная инициализация при загрузке формы
@@ -136,7 +112,11 @@ namespace IP
 
                 MyTimer = new Timer();
 
-                JsonDocument jsonDocServer = JsonDocument.Parse(Lines.jsonContent);
+                string appFolder = AppDomain.CurrentDomain.BaseDirectory;
+                string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
+                string jsonContent = File.ReadAllText(jsonFilePath);
+
+                JsonDocument jsonDocServer = JsonDocument.Parse(jsonContent);
                 JsonElement rootServer = jsonDocServer.RootElement;
 
                 int exitTimer = Int16.Parse(rootServer.GetProperty("Timer").ToString());
@@ -153,10 +133,14 @@ namespace IP
             MyTimer.Stop();
             MyTimer.Dispose();
 
-            JsonDocument jsonDocServer = JsonDocument.Parse(Lines.jsonContent);
+            string appFolder = AppDomain.CurrentDomain.BaseDirectory;
+            string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
+            string jsonContent = File.ReadAllText(jsonFilePath);
+
+            JsonDocument jsonDocServer = JsonDocument.Parse(jsonContent);
             JsonElement rootServer = jsonDocServer.RootElement;
 
-            JsonDocument jsonDocLineId = JsonDocument.Parse(Lines.jsonContent);
+            JsonDocument jsonDocLineId = JsonDocument.Parse(jsonContent);
             JsonElement rootLineId = jsonDocLineId.RootElement;
 
             string server = rootServer.GetProperty("Server").GetString();
@@ -228,10 +212,14 @@ namespace IP
 
                 SerialPortManager.StopReading();
 
-                JsonDocument jsonDocServer = JsonDocument.Parse(Lines.jsonContent);
+                string appFolder = AppDomain.CurrentDomain.BaseDirectory;
+                string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
+                string jsonContent = File.ReadAllText(jsonFilePath);
+
+                JsonDocument jsonDocServer = JsonDocument.Parse(jsonContent);
                 JsonElement rootServer = jsonDocServer.RootElement;
 
-                JsonDocument jsonDocLineId = JsonDocument.Parse(Lines.jsonContent);
+                JsonDocument jsonDocLineId = JsonDocument.Parse(jsonContent);
                 JsonElement rootLineId = jsonDocLineId.RootElement;
 
                 string server = rootServer.GetProperty("Server").GetString();
