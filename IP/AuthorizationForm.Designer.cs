@@ -34,8 +34,8 @@ namespace IP
             this.labelIPValue = new System.Windows.Forms.Label();
             this.labelDateTime = new System.Windows.Forms.Label();
             this.labelLineResultAuth = new System.Windows.Forms.Label();
-            this.buttonLabelCard = new IP.RoundedButton();
             this.buttonLabelPassword = new IP.RoundedButton();
+            this.labelAttachCard = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // labelIPValue
@@ -73,23 +73,6 @@ namespace IP
             this.labelLineResultAuth.Text = "Line";
             this.labelLineResultAuth.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // buttonLabelCard
-            // 
-            this.buttonLabelCard.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.buttonLabelCard.BackColor = System.Drawing.Color.CadetBlue;
-            this.buttonLabelCard.CornerRadius = 15;
-            this.buttonLabelCard.FlatAppearance.BorderColor = System.Drawing.Color.CadetBlue;
-            this.buttonLabelCard.FlatAppearance.BorderSize = 0;
-            this.buttonLabelCard.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonLabelCard.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.buttonLabelCard.Location = new System.Drawing.Point(202, 197);
-            this.buttonLabelCard.Name = "buttonLabelCard";
-            this.buttonLabelCard.Size = new System.Drawing.Size(170, 35);
-            this.buttonLabelCard.TabIndex = 8;
-            this.buttonLabelCard.Text = "Вход по пропуску";
-            this.buttonLabelCard.UseVisualStyleBackColor = true;
-            this.buttonLabelCard.Click += new System.EventHandler(this.ButtonLabelCard_Click);
-            // 
             // buttonLabelPassword
             // 
             this.buttonLabelPassword.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -107,13 +90,24 @@ namespace IP
             this.buttonLabelPassword.UseVisualStyleBackColor = false;
             this.buttonLabelPassword.Click += new System.EventHandler(this.ButtonLabelPassword_Click);
             // 
+            // labelAttachCard
+            // 
+            this.labelAttachCard.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelAttachCard.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelAttachCard.Location = new System.Drawing.Point(0, 195);
+            this.labelAttachCard.Name = "labelAttachCard";
+            this.labelAttachCard.Size = new System.Drawing.Size(568, 20);
+            this.labelAttachCard.TabIndex = 10;
+            this.labelAttachCard.Text = "Для авторизации приложите пропуск";
+            this.labelAttachCard.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // AuthorizationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(569, 410);
             this.ControlBox = false;
-            this.Controls.Add(this.buttonLabelCard);
+            this.Controls.Add(this.labelAttachCard);
             this.Controls.Add(this.labelLineResultAuth);
             this.Controls.Add(this.labelDateTime);
             this.Controls.Add(this.labelIPValue);
@@ -136,6 +130,6 @@ namespace IP
         private Label labelIPValue;
         private Label labelDateTime;
         private Label labelLineResultAuth;
-        private RoundedButton buttonLabelCard;
+        private Label labelAttachCard;
     }
 }

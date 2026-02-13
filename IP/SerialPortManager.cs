@@ -11,9 +11,9 @@ namespace IP
 {
     public static class SerialPortManager
     {
-        //public static JsonDocument jsonDocCOMPort { get; set; }
-        //public static JsonElement rootCOMPort { get; set; }
-        //public static string comPort { get; set; }
+        //    public static JsonDocument jsonDocCOMPort { get; set; }
+        //    public static JsonElement rootCOMPort { get; set; }
+        //    public static string comPort { get; set; }
 
         private static SerialPort port_COM_Num = null;
         private static bool isPortInitialized = false;
@@ -34,15 +34,14 @@ namespace IP
             //rootCOMPort = jsonDocCOMPort.RootElement;
             //comPort = rootCOMPort.GetProperty("COMNum").GetString();
 
+            //if (comPort == "COM7")
             {
                 try
                 {
-                    // Если порт уже инициализирован и открыт
                     if (port_COM_Num != null && port_COM_Num.IsOpen)
                     {
                         onDataReceived = dataReceivedCallback;
 
-                        // Убеждаемся, что поток чтения работает
                         if (readThread == null || !readThread.IsAlive)
                         {
                             StartReading();
@@ -97,18 +96,19 @@ namespace IP
                     return false;
                 }
             }
+
+            MessageBox.Show("Неверный COM-порт. Пожалуйста, выберите другой в настройках");
+            return false;
         }
 
         private static void StartReading()
         {
             lock (lockObject)
             {
-                // Останавливаем старый поток, если он работает
                 if (readThread != null && readThread.IsAlive)
                 {
                     continueReading = false;
 
-                    // Ждем завершения потока
                     if (!readThread.Join(1000))
                     {
                         Console.WriteLine("Поток чтения не завершился, продолжаем работу");
@@ -136,7 +136,6 @@ namespace IP
                         continue;
                     }
 
-                    // Проверяем, есть ли данные для чтения
                     if (port_COM_Num.BytesToRead > 0)
                     {
                         string message = port_COM_Num.ReadLine().Trim();
@@ -164,7 +163,6 @@ namespace IP
                 }
                 catch (InvalidOperationException)
                 {
-                    // Порт был закрыт - выходим из цикла
                     Console.WriteLine("Порт закрыт, завершаем поток чтения");
                     break;
                 }

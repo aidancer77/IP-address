@@ -40,7 +40,6 @@ namespace IP
             this.textBoxDepartment = new System.Windows.Forms.TextBox();
             this.textBoxPosition = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.labelAttachCard = new System.Windows.Forms.Label();
             this.buttonBack = new IP.RoundedButton();
             this.loginButton = new IP.RoundedButton();
             this.SuspendLayout();
@@ -110,18 +109,6 @@ namespace IP
             this.textBoxPosition.Size = new System.Drawing.Size(405, 24);
             this.textBoxPosition.TabIndex = 8;
             // 
-            // labelAttachCard
-            // 
-            this.labelAttachCard.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.labelAttachCard.AutoSize = true;
-            this.labelAttachCard.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelAttachCard.Location = new System.Drawing.Point(215, 137);
-            this.labelAttachCard.Name = "labelAttachCard";
-            this.labelAttachCard.Size = new System.Drawing.Size(159, 20);
-            this.labelAttachCard.TabIndex = 9;
-            this.labelAttachCard.Text = "Приложите пропуск";
-            this.labelAttachCard.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // buttonBack
             // 
             this.buttonBack.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -163,7 +150,6 @@ namespace IP
             this.ClientSize = new System.Drawing.Size(569, 410);
             this.ControlBox = false;
             this.Controls.Add(this.buttonBack);
-            this.Controls.Add(this.labelAttachCard);
             this.Controls.Add(this.textBoxPosition);
             this.Controls.Add(this.textBoxDepartment);
             this.Controls.Add(this.textBoxName);
@@ -189,7 +175,6 @@ namespace IP
         private TextBox textBoxDepartment;
         private TextBox textBoxPosition;
         private Timer timer1;
-        private Label labelAttachCard;
         private RoundedButton buttonBack;
     }
 }

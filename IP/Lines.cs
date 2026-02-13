@@ -1,18 +1,110 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace IP
 {
     internal class Lines
     {
+        public async Task AllLinesAsync()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string appFolder = AppDomain.CurrentDomain.BaseDirectory;
+                    string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
+                    string jsonContent = File.ReadAllText(jsonFilePath);
+
+                    JsonDocument jsonDoc = JsonDocument.Parse(jsonContent);
+                    JsonElement root = jsonDoc.RootElement;
+
+                    string server = root.GetProperty("Server").GetString();
+
+                    string urlAllLinesInfo = $"http://{server}/operators/get-lines";
+                    string jsonResponse = await GetJSONFromURL(urlAllLinesInfo);
+                    JArray jsonArray = JArray.Parse(jsonResponse);
+
+                    List<string> namesList = new List<string>();
+                    List<int> idList = new List<int>();
+
+                    foreach (JObject item in jsonArray)
+                    {
+                        int id = (int)item["id"];
+                        string name = item["name"]?.ToString();
+
+                        if (!string.IsNullOrEmpty(name) && id > 0)
+                        {
+                            namesList.Add(name);
+                            idList.Add(id);
+                        }
+                    }
+
+                    string[] namesArray = namesList.ToArray();
+                    int[] idArray = idList.ToArray();
+
+
+                    foreach (string name in namesArray)
+                    {
+                        MessageBox.Show(name);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка: {ex.Message}");
+                }
+            }
+        }
+
+        private static async Task<string> GetJSONFromURL(string urlJSON)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    client.Timeout = TimeSpan.FromSeconds(10);
+                    HttpResponseMessage response = await client.GetAsync(urlJSON);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        return responseBody;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"HTTP Error: {response.StatusCode}");
+                        return null;
+                    }
+                }
+                catch (HttpRequestException e)
+                {
+                    Console.WriteLine($"Ошибка HTTP: {e.Message}");
+                    return null;
+                }
+                catch (TaskCanceledException)
+                {
+                    Console.WriteLine("Таймаут запроса к серверу");
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Общая ошибка: {ex.Message}");
+                    return null;
+                }
+            }
+        }
+
         public string[] linesName = { "Боссар 1", "Боссар 2", "Боссар 3", "Боссар 4", "Боссар 5", "Боссар 6",
                 "Боссар 7", "Боссар 8", "Боссар 9", "Боссар 10", "Боссар 11",
                 "Боссар 12", "Боссар 13", "Волпак 1", "Волпак 2", "Волпак 3",
-                "Волпак 4", "ЛМ1", "ЛМ2", "ЛМ4", "ЛК3", "Меспак", "Стеклобанка" };
+                "Волпак 4", "ЛМ 1", "ЛМ 2", "ЛМ 4", "ЛК 3", "Меспак", "Стеклобанка" };
 
         public static int GetLineIdFromName(string lineName)
         {
