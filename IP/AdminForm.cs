@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Net.Http;
 using System.Net.Sockets;
-using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace IP
@@ -20,9 +18,65 @@ namespace IP
         public AdminForm()
         {
             InitializeComponent();
+
+            this.Paint += RoundedForm_Paint;
+            this.DoubleBuffered = true;
+            this.Resize += (s, e) => this.Invalidate();
+
             StartAdminCardCheck();
             GetIPAddress();
             SetTimer();
+        }
+
+        private void RoundedForm_Paint(object sender, PaintEventArgs e)
+        {
+            DrawCenteredRoundedRectangle(e.Graphics, 450, 270, 30);
+            RoundedRectangleTop(e.Graphics, 444, 60, 22);
+        }
+        private void DrawCenteredRoundedRectangle(Graphics g, int width, int height, int radius)
+        {
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            int x = (this.ClientSize.Width - width + 30) / 2;
+            int y = (this.ClientSize.Height - height + 30) / 2;
+
+            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
+            {
+                path.AddArc(x, y, radius, radius, 180, 90);
+                path.AddArc(x + width - radius, y, radius, radius, 270, 90);
+                path.AddArc(x + width - radius, y + height - radius, radius, radius, 0, 90);
+                path.AddArc(x, y + height - radius, radius, radius, 90, 90);
+                path.CloseFigure();
+
+                using (Pen pen = new Pen(Color.FromArgb(250, Color.LightGray), 6))
+                using (SolidBrush brush = new SolidBrush(Color.FromArgb(150, Color.White)))
+                {
+                    g.FillPath(brush, path);
+                    g.DrawPath(pen, path);
+                }
+            }
+        }
+        private void RoundedRectangleTop(Graphics g, int width, int height, int radius)
+        {
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            int x = (this.ClientSize.Width - width + 30) / 2;
+            int y = (this.ClientSize.Height - height - 175) / 2;
+
+            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
+            {
+                path.AddArc(x, y, radius, radius, 180, 90);
+                path.AddArc(x + width - radius, y, radius, radius, 270, 90);
+                path.AddLine(x + width, y + radius, x + width, y + height);
+                path.AddLine(x + width, y + height, x, y + height);
+                path.AddLine(x, y + height, x, y + radius);
+                path.CloseFigure();
+
+                using (SolidBrush brush = new SolidBrush(Color.FromArgb(250, Color.ForestGreen)))
+                {
+                    g.FillPath(brush, path);
+                }
+            }
         }
 
         private void StartAdminCardCheck()
@@ -34,9 +88,7 @@ namespace IP
             {
                 Console.WriteLine("Не удалось инициализировать COM-порт для администратора.\n" +
                               "Возможно порт занят или недоступен.",
-                              "Ошибка",
-                              MessageBoxButtons.OK,
-                              MessageBoxIcon.Warning);
+                              "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             else
             {
@@ -102,51 +154,7 @@ namespace IP
             catch (Exception ex)
             {
                 // Логируем ошибку, но не показываем пользователю
-                Console.WriteLine($"Ошибка обработки карты администратора: {ex.Message}");
-            }
-        }
-
-        private void SetTimer()
-        {
-            System.Windows.Forms.Timer FormTimer = new System.Windows.Forms.Timer();
-            FormTimer.Interval = 1000;
-            FormTimer.Tick += (s, e) =>
-            {
-                if (labelDateTime != null && !isFormClosing && this.IsHandleCreated)
-                    labelDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
-            };
-            FormTimer.Start();
-        }
-
-        private void GetIPAddress()
-        {
-            string localIP = GetLocalIPv4Address();
-            if (labelIPValue != null)
-                labelIPValue.Text = localIP;
-        }
-
-        private string GetLocalIPv4Address()
-        {
-            try
-            {
-                string hostName = Dns.GetHostName();
-                IPAddress[] addresses = Dns.GetHostAddresses(hostName);
-
-                foreach (IPAddress address in addresses)
-                {
-                    if (address.AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        if (address.ToString() != "127.0.0.1")
-                        {
-                            return address.ToString();
-                        }
-                    }
-                }
-                return "IP-адрес не найден";
-            }
-            catch (Exception)
-            {
-                return "Ошибка получения IP";
+                Console.WriteLine($"Ошибка обработки карты администратора: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -161,9 +169,7 @@ namespace IP
                 {
                     MessageBox.Show("Файл настроек lineinfo.json не найден.\n" +
                                   "Пожалуйста, настройте параметры линии в приложении.",
-                                  "Ошибка",
-                                  MessageBoxButtons.OK,
-                                  MessageBoxIcon.Error);
+                                  "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return null;
                 }
 
@@ -173,14 +179,12 @@ namespace IP
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка загрузки настроек: {ex.Message}",
-                              "Ошибка",
-                              MessageBoxButtons.OK,
-                              MessageBoxIcon.Error);
+                              "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
         }
 
-        private void ButtonLabelPassword_Click(object sender, EventArgs e)
+        private void ButtonLabelEnter_Click(object sender, EventArgs e)
         {
             LineInfo lineInfo = LoadLineInfoFromJson();
 
@@ -202,18 +206,12 @@ namespace IP
                 }
                 else
                 {
-                    MessageBox.Show("Введите верный пароль",
-                                  "Внимание",
-                                  MessageBoxButtons.OK,
-                                  MessageBoxIcon.Warning);
+                    MessageBox.Show("Введите верный пароль", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
             else
             {
-                MessageBox.Show("Не удалось загрузить настройки администратора",
-                              "Ошибка",
-                              MessageBoxButtons.OK,
-                              MessageBoxIcon.Error);
+                MessageBox.Show("Не удалось загрузить настройки администратора", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -257,13 +255,60 @@ namespace IP
             }
         }
 
-        private void textBoxPassword_KeyPress(object sender, KeyPressEventArgs e)
+        private void SetTimer()
         {
-            // Обработка нажатия Enter в поле пароля
-            if (e.KeyChar == (char)Keys.Enter)
+            // Сразу устанавливаем время
+            UpdateDateTime();
+
+            System.Windows.Forms.Timer FormTimer = new System.Windows.Forms.Timer();
+            FormTimer.Interval = 1000;
+            FormTimer.Tick += (s, e) => UpdateDateTime();
+            FormTimer.Start();
+        }
+        private void UpdateDateTime()
+        {
+            if (labelDateTime != null && !isFormClosing && this.IsHandleCreated)
             {
-                ButtonLabelPassword_Click(sender, e);
-                e.Handled = true;
+                // Используем Invoke если вызываем из другого потока
+                if (labelDateTime.InvokeRequired)
+                {
+                    labelDateTime.Invoke(new Action(() =>
+                        labelDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm")));
+                }
+                else
+                {
+                    labelDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+                }
+            }
+        }
+        private void GetIPAddress()
+        {
+            string localIP = GetLocalIPv4Address();
+            if (labelIPValue != null)
+                labelIPValue.Text = localIP;
+        }
+        private string GetLocalIPv4Address()
+        {
+            try
+            {
+                string hostName = Dns.GetHostName();
+                IPAddress[] addresses = Dns.GetHostAddresses(hostName);
+
+                foreach (IPAddress address in addresses)
+                {
+                    if (address.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        if (address.ToString() != "127.0.0.1")
+                        {
+                            return address.ToString();
+                        }
+                    }
+                }
+                return "IP-адрес не найден";
+            }
+            catch (Exception)
+            {
+                return "Ошибка получения IP";
             }
         }
     }
