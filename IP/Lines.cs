@@ -65,7 +65,6 @@ namespace IP
                     string appFolder = AppDomain.CurrentDomain.BaseDirectory;
                     string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
 
-                    // В .NET Framework используем синхронное чтение файла
                     string jsonContent = File.ReadAllText(jsonFilePath);
 
                     JsonDocument jsonDoc = JsonDocument.Parse(jsonContent);

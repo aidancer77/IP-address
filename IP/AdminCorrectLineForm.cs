@@ -1,13 +1,12 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.IO.Ports;
 using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
 using System.Windows.Forms;
-using System.Xml.Linq;
 
 namespace IP
 {
@@ -24,7 +23,9 @@ namespace IP
 
             GetIPAddress();
             SetTimer();
+
             ComboBoxLineValue();
+            ComboBoxCOMPortValue();
             LoadExistingSettings();
         }
 
@@ -32,57 +33,6 @@ namespace IP
         {
             get { return comboBoxLine.Text; }
             set { comboBoxLine.Text = value; }
-        }
-
-        private void RoundedForm_Paint(object sender, PaintEventArgs e)
-        {
-            DrawCenteredRoundedRectangle(e.Graphics, 450, 270, 30);
-            RoundedRectangleTop(e.Graphics, 444, 60, 22);
-        }
-        private void DrawCenteredRoundedRectangle(Graphics g, int width, int height, int radius)
-        {
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-            int x = (this.ClientSize.Width - width + 30) / 2;
-            int y = (this.ClientSize.Height - height + 30) / 2;
-
-            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
-            {
-                path.AddArc(x, y, radius, radius, 180, 90);
-                path.AddArc(x + width - radius, y, radius, radius, 270, 90);
-                path.AddArc(x + width - radius, y + height - radius, radius, radius, 0, 90);
-                path.AddArc(x, y + height - radius, radius, radius, 90, 90);
-                path.CloseFigure();
-
-                using (Pen pen = new Pen(Color.FromArgb(250, Color.LightGray), 6))
-                using (SolidBrush brush = new SolidBrush(Color.FromArgb(150, Color.White)))
-                {
-                    g.FillPath(brush, path);
-                    g.DrawPath(pen, path);
-                }
-            }
-        }
-        private void RoundedRectangleTop(Graphics g, int width, int height, int radius)
-        {
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-            int x = (this.ClientSize.Width - width + 30) / 2;
-            int y = (this.ClientSize.Height - height - 175) / 2;
-
-            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
-            {
-                path.AddArc(x, y, radius, radius, 180, 90);
-                path.AddArc(x + width - radius, y, radius, radius, 270, 90);
-                path.AddLine(x + width, y + radius, x + width, y + height);
-                path.AddLine(x + width, y + height, x, y + height);
-                path.AddLine(x, y + height, x, y + radius);
-                path.CloseFigure();
-
-                using (SolidBrush brush = new SolidBrush(Color.FromArgb(250, Color.ForestGreen)))
-                {
-                    g.FillPath(brush, path);
-                }
-            }
         }
 
         private async void ButtonChooseLine_Click(object sender, EventArgs e)
@@ -95,11 +45,10 @@ namespace IP
 
             Lines lines = new Lines();
             string selectedLineName = comboBoxLine.Text;
+            string selectedCOMPort = comboBoxCOMPort.Text;
 
-            // Получаем массив ID (асинхронно)
             string[] allLineIds = await lines.GetAllLinesIdAsync();
 
-            // Находим индекс выбранной линии в ComboBox
             int selectedIndex = comboBoxLine.SelectedIndex;
 
             if (selectedIndex >= 0 && selectedIndex < allLineIds.Length)
@@ -113,7 +62,8 @@ namespace IP
                     LineInfo lineInfo = LoadOrCreateLineInfo();
 
                     lineInfo.LineName = selectedLineName;
-                    lineInfo.LineId = lineIdInt; // Используем числовой ID
+                    lineInfo.LineId = lineIdInt;
+                    lineInfo.COMNum = selectedCOMPort;
 
                     try
                     {
@@ -228,15 +178,45 @@ namespace IP
                 comboBoxLine.Text = "Выберите линию";
             }
         }
+        private void ComboBoxCOMPortValue()
+        {
+            try
+            {
+                string[] ports = SerialPort.GetPortNames();
+
+                //foreach (string port in ports)
+                //{
+                //    comboBoxCOMPort.Items.Add(port);
+                //}
+
+                if (ports != null && ports.Length > 0)
+                {
+                    comboBoxCOMPort.Items.Clear();
+                    comboBoxCOMPort.Items.AddRange(ports);
+                    comboBoxCOMPort.Text = "Выберите порт";
+                }
+                else
+                {
+                    MessageBox.Show("Не удалось загрузить список портов", "Предупреждение",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    comboBoxCOMPort.Text = "Выберите порт";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки портов: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                comboBoxCOMPort.Text = "Выберите порт";
+            }
+        }
 
         private void SetTimer()
         {
+            UpdateDateTime();
+
             Timer FormTimer = new Timer();
             FormTimer.Interval = 1000;
-            FormTimer.Tick += (s, e) =>
-            {
-                labelDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
-            };
+            FormTimer.Tick += (s, e) => UpdateDateTime();
             FormTimer.Start();
         }
         private void UpdateDateTime()
@@ -282,6 +262,57 @@ namespace IP
             catch (Exception)
             {
                 return "Ошибка получения IP";
+            }
+        }
+
+        private void RoundedForm_Paint(object sender, PaintEventArgs e)
+        {
+            DrawCenteredRoundedRectangle(e.Graphics, 450, 270, 30);
+            RoundedRectangleTop(e.Graphics, 444, 60, 24);
+        }
+        private void DrawCenteredRoundedRectangle(Graphics g, int width, int height, int radius)
+        {
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            int x = (this.ClientSize.Width - width + 30) / 2;
+            int y = (this.ClientSize.Height - height + 28) / 2;
+
+            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
+            {
+                path.AddArc(x, y, radius, radius, 180, 90);
+                path.AddArc(x + width - radius, y, radius, radius, 270, 90);
+                path.AddArc(x + width - radius, y + height - radius, radius, radius, 0, 90);
+                path.AddArc(x, y + height - radius, radius, radius, 90, 90);
+                path.CloseFigure();
+
+                using (Pen pen = new Pen(Color.FromArgb(250, Color.LightGray), 6))
+                using (SolidBrush brush = new SolidBrush(Color.FromArgb(150, Color.White)))
+                {
+                    g.FillPath(brush, path);
+                    g.DrawPath(pen, path);
+                }
+            }
+        }
+        private void RoundedRectangleTop(Graphics g, int width, int height, int radius)
+        {
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            int x = (this.ClientSize.Width - width + 30) / 2;
+            int y = (this.ClientSize.Height - height - 175) / 2;
+
+            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
+            {
+                path.AddArc(x, y, radius, radius, 180, 90);
+                path.AddArc(x + width - radius, y, radius, radius, 270, 90);
+                path.AddLine(x + width, y + radius, x + width, y + height);
+                path.AddLine(x + width, y + height, x, y + height);
+                path.AddLine(x, y + height, x, y + radius);
+                path.CloseFigure();
+
+                using (SolidBrush brush = new SolidBrush(Color.FromArgb(250, Color.ForestGreen)))
+                {
+                    g.FillPath(brush, path);
+                }
             }
         }
     }

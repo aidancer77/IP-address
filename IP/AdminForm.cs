@@ -31,14 +31,14 @@ namespace IP
         private void RoundedForm_Paint(object sender, PaintEventArgs e)
         {
             DrawCenteredRoundedRectangle(e.Graphics, 450, 270, 30);
-            RoundedRectangleTop(e.Graphics, 444, 60, 22);
+            RoundedRectangleTop(e.Graphics, 444, 60, 24);
         }
         private void DrawCenteredRoundedRectangle(Graphics g, int width, int height, int radius)
         {
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
             int x = (this.ClientSize.Width - width + 30) / 2;
-            int y = (this.ClientSize.Height - height + 30) / 2;
+            int y = (this.ClientSize.Height - height + 28) / 2;
 
             using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
             {
@@ -257,7 +257,6 @@ namespace IP
 
         private void SetTimer()
         {
-            // Сразу устанавливаем время
             UpdateDateTime();
 
             System.Windows.Forms.Timer FormTimer = new System.Windows.Forms.Timer();

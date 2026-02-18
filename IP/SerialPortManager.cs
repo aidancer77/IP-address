@@ -30,108 +30,80 @@ namespace IP
                 string appFolder = AppDomain.CurrentDomain.BaseDirectory;
                 string jsonFilePath = Path.Combine(appFolder, "lineinfo.json");
 
-                // Проверяем существование файла
-                if (!File.Exists(jsonFilePath))
-                {
-                    Console.WriteLine("Файл lineinfo.json не найден. Создание настроек по умолчанию...");
-
-                    // Создаем временные настройки по умолчанию
-                    var defaultSettings = new
-                    {
-                        COMNum = "COM7",
-                        Server = "localhost",
-                        LineId = 1,
-                        LineName = "Линия 1"
-                    };
-
-                    string defaultJson = Newtonsoft.Json.JsonConvert.SerializeObject(defaultSettings, Newtonsoft.Json.Formatting.Indented);
-                    File.WriteAllText(jsonFilePath, defaultJson, System.Text.Encoding.UTF8);
-                }
-
                 string jsonContent = File.ReadAllText(jsonFilePath);
                 JsonDocCOMPort = JsonDocument.Parse(jsonContent);
                 RootCOMPort = JsonDocCOMPort.RootElement;
 
-                // Безопасное получение значения COMNum
                 if (RootCOMPort.TryGetProperty("COMNum", out JsonElement comElement))
                 {
                     ComPort = comElement.GetString();
                 }
                 else
                 {
-                    Console.WriteLine("В файле lineinfo.json не найдено поле COMNum. Используется COM7 по умолчанию");
-                    ComPort = "COM7";
+                    Console.WriteLine("В файле lineinfo.json не найдено поле COMNum");
+                    ComPort = "";
                 }
 
-                JsonDocCOMPort = JsonDocument.Parse(jsonContent);
-                RootCOMPort = JsonDocCOMPort.RootElement;
                 ComPort = RootCOMPort.GetProperty("COMNum").GetString();
 
-                if (ComPort == "COM7")
+                try
                 {
-                    try
+                    if (port_COM_Num != null && port_COM_Num.IsOpen)
                     {
-                        if (port_COM_Num != null && port_COM_Num.IsOpen)
+                        onDataReceived = dataReceivedCallback;
+
+                        if (readThread == null || !readThread.IsAlive)
                         {
-                            onDataReceived = dataReceivedCallback;
-
-                            if (readThread == null || !readThread.IsAlive)
-                            {
-                                StartReading();
-                            }
-
-                            Console.WriteLine("COM-порт уже инициализирован и открыт");
-                            return true;
+                            StartReading();
                         }
 
-                        ClosePortInternal();
-
-                        port_COM_Num = new SerialPort(ComPort, 9600, Parity.None, 8, StopBits.One)
-                        //port_COM_Num = new SerialPort("COM7", 9600, Parity.None, 8, StopBits.One)
-                        {
-                            Handshake = Handshake.None,
-                            ReadTimeout = 1000,
-                            WriteTimeout = 1000,
-                            RtsEnable = true,
-                            DtrEnable = true,
-                            NewLine = "\r\n"
-                        };
-
-                        port_COM_Num.Open();
-                        port_COM_Num.DiscardInBuffer();
-                        port_COM_Num.DiscardOutBuffer();
-
-                        isPortInitialized = true;
-                        onDataReceived = dataReceivedCallback;
-                        isDisposing = false;
-
-                        StartReading();
-
-                        Console.WriteLine("COM-порт успешно инициализирован");
+                        Console.WriteLine("COM-порт уже инициализирован и открыт");
                         return true;
                     }
-                    catch (UnauthorizedAccessException ex)
-                    {
-                        Console.WriteLine($"Доступ к порту COM-порт запрещен: {ex.Message}\n" +
-                                      "Возможно порт занят другой программой.\n" +
-                                      "Закройте все программы, использующие COM-порт, и попробуйте снова.");
-                        return false;
-                    }
-                    catch (IOException ex)
-                    {
-                        Console.WriteLine($"Порт COM-порт занят или недоступен: {ex.Message}\n" +
-                                      "Подождите несколько секунд и попробуйте снова.");
-                        return false;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Ошибка инициализации COM-порта: {ex.Message}");
-                        return false;
-                    }
-                }
 
-                MessageBox.Show("Неверный COM-порт. Пожалуйста, выберите другой в настройках");
-                return false;
+                    ClosePortInternal();
+
+                    port_COM_Num = new SerialPort(ComPort, 9600, Parity.None, 8, StopBits.One)
+                    {
+                        Handshake = Handshake.None,
+                        ReadTimeout = 1000,
+                        WriteTimeout = 1000,
+                        RtsEnable = true,
+                        DtrEnable = true,
+                        NewLine = "\r\n"
+                    };
+
+                    port_COM_Num.Open();
+                    port_COM_Num.DiscardInBuffer();
+                    port_COM_Num.DiscardOutBuffer();
+
+                    isPortInitialized = true;
+                    onDataReceived = dataReceivedCallback;
+                    isDisposing = false;
+
+                    StartReading();
+
+                    Console.WriteLine("COM-порт успешно инициализирован");
+                    return true;
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    Console.WriteLine($"Доступ к порту COM-порт запрещен: {ex.Message}\n" +
+                                  "Возможно порт занят другой программой.\n" +
+                                  "Закройте все программы, использующие COM-порт, и попробуйте снова.");
+                    return false;
+                }
+                catch (IOException ex)
+                {
+                    Console.WriteLine($"Порт COM-порт занят или недоступен: {ex.Message}\n" +
+                                  "Подождите несколько секунд и попробуйте снова.");
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка инициализации COM-порта: {ex.Message}");
+                    return false;
+                }
             }
             catch (Exception ex)
             {

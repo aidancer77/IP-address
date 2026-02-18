@@ -51,57 +51,6 @@ namespace IP
             }
         }
 
-        private void RoundedForm_Paint(object sender, PaintEventArgs e)
-        {
-            DrawCenteredRoundedRectangle(e.Graphics, 450, 270, 30);
-            RoundedRectangleTop(e.Graphics, 444, 60, 22);
-        }
-        private void DrawCenteredRoundedRectangle(Graphics g, int width, int height, int radius)
-        {
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-            int x = (this.ClientSize.Width - width + 30) / 2;
-            int y = (this.ClientSize.Height - height + 30) / 2;
-
-            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
-            {
-                path.AddArc(x, y, radius, radius, 180, 90);
-                path.AddArc(x + width - radius, y, radius, radius, 270, 90);
-                path.AddArc(x + width - radius, y + height - radius, radius, radius, 0, 90);
-                path.AddArc(x, y + height - radius, radius, radius, 90, 90);
-                path.CloseFigure();
-
-                using (Pen pen = new Pen(Color.FromArgb(250, Color.LightGray), 6))
-                using (SolidBrush brush = new SolidBrush(Color.FromArgb(150, Color.White)))
-                {
-                    g.FillPath(brush, path);
-                    g.DrawPath(pen, path);
-                }
-            }
-        }
-        private void RoundedRectangleTop(Graphics g, int width, int height, int radius)
-        {
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-            int x = (this.ClientSize.Width - width + 30) / 2;
-            int y = (this.ClientSize.Height - height - 175) / 2;
-
-            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
-            {
-                path.AddArc(x, y, radius, radius, 180, 90);
-                path.AddArc(x + width - radius, y, radius, radius, 270, 90);
-                path.AddLine(x + width, y + radius, x + width, y + height);
-                path.AddLine(x + width, y + height, x, y + height);
-                path.AddLine(x, y + height, x, y + radius);
-                path.CloseFigure();
-
-                using (SolidBrush brush = new SolidBrush(Color.FromArgb(250, Color.ForestGreen)))
-                {
-                    g.FillPath(brush, path);
-                }
-            }
-        }
-
         public void ProcessCardData(string message)
         {
             try
@@ -443,6 +392,57 @@ namespace IP
             catch (Exception)
             {
                 return "Ошибка получения IP";
+            }
+        }
+
+        private void RoundedForm_Paint(object sender, PaintEventArgs e)
+        {
+            DrawCenteredRoundedRectangle(e.Graphics, 450, 270, 30);
+            RoundedRectangleTop(e.Graphics, 444, 60, 24);
+        }
+        private void DrawCenteredRoundedRectangle(Graphics g, int width, int height, int radius)
+        {
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            int x = (this.ClientSize.Width - width + 30) / 2;
+            int y = (this.ClientSize.Height - height + 28) / 2;
+
+            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
+            {
+                path.AddArc(x, y, radius, radius, 180, 90);
+                path.AddArc(x + width - radius, y, radius, radius, 270, 90);
+                path.AddArc(x + width - radius, y + height - radius, radius, radius, 0, 90);
+                path.AddArc(x, y + height - radius, radius, radius, 90, 90);
+                path.CloseFigure();
+
+                using (Pen pen = new Pen(Color.FromArgb(250, Color.LightGray), 6))
+                using (SolidBrush brush = new SolidBrush(Color.FromArgb(150, Color.White)))
+                {
+                    g.FillPath(brush, path);
+                    g.DrawPath(pen, path);
+                }
+            }
+        }
+        private void RoundedRectangleTop(Graphics g, int width, int height, int radius)
+        {
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            int x = (this.ClientSize.Width - width + 30) / 2;
+            int y = (this.ClientSize.Height - height - 175) / 2;
+
+            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
+            {
+                path.AddArc(x, y, radius, radius, 180, 90);
+                path.AddArc(x + width - radius, y, radius, radius, 270, 90);
+                path.AddLine(x + width, y + radius, x + width, y + height);
+                path.AddLine(x + width, y + height, x, y + height);
+                path.AddLine(x, y + height, x, y + radius);
+                path.CloseFigure();
+
+                using (SolidBrush brush = new SolidBrush(Color.FromArgb(250, Color.ForestGreen)))
+                {
+                    g.FillPath(brush, path);
+                }
             }
         }
     }

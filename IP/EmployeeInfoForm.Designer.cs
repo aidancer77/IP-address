@@ -36,9 +36,9 @@ namespace IP
             this.labelIPValue = new System.Windows.Forms.Label();
             this.labelDateTime = new System.Windows.Forms.Label();
             this.labelLineResultEmpl = new System.Windows.Forms.Label();
-            this.textBoxName = new System.Windows.Forms.TextBox();
-            this.textBoxDepartment = new System.Windows.Forms.TextBox();
-            this.textBoxPosition = new System.Windows.Forms.TextBox();
+            this.labelNameValue = new System.Windows.Forms.Label();
+            this.labelDepartmentValue = new System.Windows.Forms.Label();
+            this.labelPositionValue = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.buttonBack = new IP.RoundedButton();
             this.loginButton = new IP.RoundedButton();
@@ -82,35 +82,38 @@ namespace IP
             this.labelLineResultEmpl.TabIndex = 7;
             this.labelLineResultEmpl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // textBoxName
+            // labelNameValue
             // 
-            this.textBoxName.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.textBoxName.Enabled = false;
-            this.textBoxName.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBoxName.Location = new System.Drawing.Point(121, 170);
-            this.textBoxName.Name = "textBoxName";
-            this.textBoxName.Size = new System.Drawing.Size(360, 24);
-            this.textBoxName.TabIndex = 8;
+            this.labelNameValue.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelNameValue.BackColor = System.Drawing.Color.Transparent;
+            this.labelNameValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelNameValue.ForeColor = System.Drawing.Color.Black;
+            this.labelNameValue.Location = new System.Drawing.Point(120, 176);
+            this.labelNameValue.Name = "labelNameValue";
+            this.labelNameValue.Size = new System.Drawing.Size(360, 20);
+            this.labelNameValue.TabIndex = 9;
             // 
-            // textBoxDepartment
+            // labelDepartmentValue
             // 
-            this.textBoxDepartment.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.textBoxDepartment.Enabled = false;
-            this.textBoxDepartment.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBoxDepartment.Location = new System.Drawing.Point(121, 216);
-            this.textBoxDepartment.Name = "textBoxDepartment";
-            this.textBoxDepartment.Size = new System.Drawing.Size(360, 24);
-            this.textBoxDepartment.TabIndex = 8;
+            this.labelDepartmentValue.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelDepartmentValue.BackColor = System.Drawing.Color.Transparent;
+            this.labelDepartmentValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelDepartmentValue.ForeColor = System.Drawing.Color.Black;
+            this.labelDepartmentValue.Location = new System.Drawing.Point(120, 219);
+            this.labelDepartmentValue.Name = "labelDepartmentValue";
+            this.labelDepartmentValue.Size = new System.Drawing.Size(360, 20);
+            this.labelDepartmentValue.TabIndex = 9;
             // 
-            // textBoxPosition
+            // labelPositionValue
             // 
-            this.textBoxPosition.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.textBoxPosition.Enabled = false;
-            this.textBoxPosition.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBoxPosition.Location = new System.Drawing.Point(121, 261);
-            this.textBoxPosition.Name = "textBoxPosition";
-            this.textBoxPosition.Size = new System.Drawing.Size(360, 24);
-            this.textBoxPosition.TabIndex = 8;
+            this.labelPositionValue.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelPositionValue.BackColor = System.Drawing.Color.Transparent;
+            this.labelPositionValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelPositionValue.ForeColor = System.Drawing.Color.Black;
+            this.labelPositionValue.Location = new System.Drawing.Point(120, 262);
+            this.labelPositionValue.Name = "labelPositionValue";
+            this.labelPositionValue.Size = new System.Drawing.Size(360, 20);
+            this.labelPositionValue.TabIndex = 9;
             // 
             // buttonBack
             // 
@@ -120,7 +123,7 @@ namespace IP
             this.buttonBack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonBack.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.buttonBack.ForeColor = System.Drawing.Color.White;
-            this.buttonBack.Location = new System.Drawing.Point(411, 314);
+            this.buttonBack.Location = new System.Drawing.Point(410, 310);
             this.buttonBack.Name = "buttonBack";
             this.buttonBack.Size = new System.Drawing.Size(70, 40);
             this.buttonBack.TabIndex = 10;
@@ -136,7 +139,7 @@ namespace IP
             this.loginButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.loginButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.loginButton.ForeColor = System.Drawing.Color.White;
-            this.loginButton.Location = new System.Drawing.Point(216, 315);
+            this.loginButton.Location = new System.Drawing.Point(215, 310);
             this.loginButton.Name = "loginButton";
             this.loginButton.Size = new System.Drawing.Size(170, 40);
             this.loginButton.TabIndex = 5;
@@ -151,10 +154,10 @@ namespace IP
             this.BackColor = System.Drawing.Color.Linen;
             this.ClientSize = new System.Drawing.Size(570, 410);
             this.ControlBox = false;
+            this.Controls.Add(this.labelPositionValue);
+            this.Controls.Add(this.labelDepartmentValue);
+            this.Controls.Add(this.labelNameValue);
             this.Controls.Add(this.buttonBack);
-            this.Controls.Add(this.textBoxPosition);
-            this.Controls.Add(this.textBoxDepartment);
-            this.Controls.Add(this.textBoxName);
             this.Controls.Add(this.labelLineResultEmpl);
             this.Controls.Add(this.loginButton);
             this.Controls.Add(this.labelDateTime);
@@ -173,9 +176,9 @@ namespace IP
         private Label labelDateTime;
         private RoundedButton loginButton;
         private Label labelLineResultEmpl;
-        private TextBox textBoxName;
-        private TextBox textBoxDepartment;
-        private TextBox textBoxPosition;
+        private Label labelNameValue;
+        private Label labelDepartmentValue;
+        private Label labelPositionValue;
         private Timer timer1;
         private RoundedButton buttonBack;
     }

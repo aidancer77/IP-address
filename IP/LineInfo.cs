@@ -19,7 +19,7 @@ namespace IP
             Timer = 5;
             LineId = 0;
             LineName = "";
-            COMNum = "COM7";
+            COMNum = "";
         }
     }
 }

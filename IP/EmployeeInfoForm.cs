@@ -4,10 +4,10 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Linq;
 
 namespace IP
 {
@@ -23,9 +23,9 @@ namespace IP
         private string position = "";
 
         // Свойства для доступа к элементам
-        public TextBox NameTextBox => textBoxName;
-        public TextBox DepartmentTextBox => textBoxDepartment;
-        public TextBox PositionTextBox => textBoxPosition;
+        public Label NameLabel => labelNameValue;
+        public Label DepartmentLabel => labelDepartmentValue;
+        public Label PositionLabel => labelPositionValue;
 
         // Конструктор с полными данными
         public EmployeeInfoForm(string line, string name, string dept, string pos)
@@ -68,7 +68,7 @@ namespace IP
                 }
             }
 
-            UpdateEmployeeTextboxes(employeeName, department, position);
+            UpdateEmployeeLabels(employeeName, department, position);
 
             GetIPAddress();
             SetTimer();
@@ -76,15 +76,15 @@ namespace IP
 
         private void RoundedForm_Paint(object sender, PaintEventArgs e)
         {
-            DrawCenteredRoundedRectangle(e.Graphics, 450, 300, 30);
-            RoundedRectangleTop(e.Graphics, 444, 60, 22);
+            DrawCenteredRoundedRectangle(e.Graphics, 450, 285, 30);
+            RoundedRectangleTop(e.Graphics, 444, 60, 24);
         }
         private void DrawCenteredRoundedRectangle(Graphics g, int width, int height, int radius)
         {
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
             int x = (this.ClientSize.Width - width + 30) / 2;
-            int y = (this.ClientSize.Height - height + 30) / 2;
+            int y = (this.ClientSize.Height - height + 44) / 2;
 
             using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
             {
@@ -133,14 +133,14 @@ namespace IP
 
             if (this.IsHandleCreated && !isFormClosing && !this.IsDisposed)
             {
-                UpdateEmployeeTextboxes(name, dept, pos);
+                UpdateEmployeeLabels(name, dept, pos);
             }
         }
 
         private void EmployeeInfoForm_Load(object sender, EventArgs e)
         {
             // Дополнительная проверка при загрузке
-            UpdateEmployeeTextboxes(employeeName, department, position);
+            UpdateEmployeeLabels(employeeName, department, position);
 
             // Если данные пустые, показываем предупреждение
             if (string.IsNullOrEmpty(employeeName))
@@ -151,7 +151,7 @@ namespace IP
 
         private void LoginButton_Click(object sender, EventArgs e)
         {
-            if (employeeName == "" && department == "" && position == "")
+            if (string.IsNullOrEmpty(employeeName) && string.IsNullOrEmpty(department) && string.IsNullOrEmpty(position))
             {
                 MessageBox.Show("Пройдите авторизацию");
             }
@@ -183,6 +183,18 @@ namespace IP
             }
         }
 
+        private void ButtonBack_Click(object sender, EventArgs e)
+        {
+            isFormClosing = true;
+
+            SerialPortManager.StopReading();
+
+            AuthorizationForm authorizationForm = new AuthorizationForm();
+            ClearEmployeeLabels();
+            this.Hide();
+            authorizationForm.Show();
+        }
+
         private async void TimerTickHandler(object sender, EventArgs e)
         {
             MyTimer.Stop();
@@ -204,13 +216,14 @@ namespace IP
             string checkLine = $"http://{server}/operators/checkLine?lineId={lineId}";
             string checkLineJSON = await GetJSONFromURL(checkLine);
 
-            if (checkLineJSON == "")
+            if (string.IsNullOrEmpty(checkLineJSON))
             {
                 AuthorizationForm authorizationForm = new AuthorizationForm();
                 this.Hide();
                 authorizationForm.Show();
 
                 authorizationForm.BringToFront();
+                authorizationForm.Activate();
                 authorizationForm.Focus();
                 MessageBox.Show("Линия не запущена", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -266,32 +279,36 @@ namespace IP
                 MyTimer.Dispose();
             }
         }
-
         private void EmployeeInfoForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             isFormClosing = true;
         }
-        private void UpdateEmployeeTextboxes(string name, string dept, string pos)
+
+        private void ClearEmployeeLabels()
+        {
+            UpdateEmployeeLabels("", "", "");
+        }
+        private void UpdateEmployeeLabels(string name, string dept, string pos)
         {
             try
             {
-                if (textBoxName.InvokeRequired)
+                if (labelNameValue.InvokeRequired)
                 {
-                    textBoxName.Invoke(new Action(() =>
+                    labelNameValue.Invoke(new Action(() =>
                     {
                         if (!isFormClosing && !this.IsDisposed && this.IsHandleCreated)
                         {
-                            textBoxName.Text = name;
-                            textBoxDepartment.Text = dept;
-                            textBoxPosition.Text = pos;
+                            labelNameValue.Text = name;
+                            labelDepartmentValue.Text = dept;
+                            labelPositionValue.Text = pos;
                         }
                     }));
                 }
                 else
                 {
-                    textBoxName.Text = name;
-                    textBoxDepartment.Text = dept;
-                    textBoxPosition.Text = pos;
+                    labelNameValue.Text = name;
+                    labelDepartmentValue.Text = dept;
+                    labelPositionValue.Text = pos;
                 }
             }
             catch (Exception ex)
@@ -300,24 +317,6 @@ namespace IP
             }
         }
 
-        private void ClearEmployeeTextboxes()
-        {
-            UpdateEmployeeTextboxes("", "", "");
-        }
-
-        private void ButtonBack_Click(object sender, EventArgs e)
-        {
-            isFormClosing = true;
-
-            // Только останавливаем чтение
-            SerialPortManager.StopReading();
-
-            AuthorizationForm authorizationForm = new AuthorizationForm();
-
-            ClearEmployeeTextboxes();
-            this.Hide();
-            authorizationForm.Show();
-        }
         private void SetTimer()
         {
             // Сразу устанавливаем время

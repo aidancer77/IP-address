@@ -34,7 +34,7 @@ namespace IP
             this.labelDateTime = new System.Windows.Forms.Label();
             this.labelAttachPass = new System.Windows.Forms.Label();
             this.textBoxPassword = new System.Windows.Forms.TextBox();
-            this.ButtonLabelEnter = new IP.RoundedButton();
+            this.buttonLabelEnter = new IP.RoundedButton();
             this.buttonLabelBack = new IP.RoundedButton();
             this.SuspendLayout();
             // 
@@ -83,24 +83,25 @@ namespace IP
             this.textBoxPassword.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.textBoxPassword.Location = new System.Drawing.Point(220, 200);
             this.textBoxPassword.Name = "textBoxPassword";
+            this.textBoxPassword.PasswordChar = '*';
             this.textBoxPassword.Size = new System.Drawing.Size(170, 24);
             this.textBoxPassword.TabIndex = 8;
             // 
-            // ButtonLabelEnter
+            // buttonLabelEnter
             // 
-            this.ButtonLabelEnter.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.ButtonLabelEnter.BackColor = System.Drawing.Color.ForestGreen;
-            this.ButtonLabelEnter.CornerRadius = 30;
-            this.ButtonLabelEnter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonLabelEnter.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.ButtonLabelEnter.ForeColor = System.Drawing.Color.White;
-            this.ButtonLabelEnter.Location = new System.Drawing.Point(220, 242);
-            this.ButtonLabelEnter.Name = "ButtonLabelEnter";
-            this.ButtonLabelEnter.Size = new System.Drawing.Size(170, 40);
-            this.ButtonLabelEnter.TabIndex = 5;
-            this.ButtonLabelEnter.Text = "Войти";
-            this.ButtonLabelEnter.UseVisualStyleBackColor = false;
-            this.ButtonLabelEnter.Click += new System.EventHandler(this.ButtonLabelEnter_Click);
+            this.buttonLabelEnter.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.buttonLabelEnter.BackColor = System.Drawing.Color.ForestGreen;
+            this.buttonLabelEnter.CornerRadius = 30;
+            this.buttonLabelEnter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonLabelEnter.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.buttonLabelEnter.ForeColor = System.Drawing.Color.White;
+            this.buttonLabelEnter.Location = new System.Drawing.Point(220, 245);
+            this.buttonLabelEnter.Name = "buttonLabelEnter";
+            this.buttonLabelEnter.Size = new System.Drawing.Size(170, 40);
+            this.buttonLabelEnter.TabIndex = 5;
+            this.buttonLabelEnter.Text = "Войти";
+            this.buttonLabelEnter.UseVisualStyleBackColor = false;
+            this.buttonLabelEnter.Click += new System.EventHandler(this.ButtonLabelEnter_Click);
             // 
             // buttonLabelBack
             // 
@@ -110,7 +111,7 @@ namespace IP
             this.buttonLabelBack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonLabelBack.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.buttonLabelBack.ForeColor = System.Drawing.Color.White;
-            this.buttonLabelBack.Location = new System.Drawing.Point(220, 297);
+            this.buttonLabelBack.Location = new System.Drawing.Point(220, 300);
             this.buttonLabelBack.Name = "buttonLabelBack";
             this.buttonLabelBack.Size = new System.Drawing.Size(170, 40);
             this.buttonLabelBack.TabIndex = 5;
@@ -120,7 +121,7 @@ namespace IP
             // 
             // AdminForm
             // 
-            this.AcceptButton = this.ButtonLabelEnter;
+            this.AcceptButton = this.buttonLabelEnter;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Linen;
@@ -130,7 +131,7 @@ namespace IP
             this.Controls.Add(this.labelDateTime);
             this.Controls.Add(this.labelIPValue);
             this.Controls.Add(this.buttonLabelBack);
-            this.Controls.Add(this.ButtonLabelEnter);
+            this.Controls.Add(this.buttonLabelEnter);
             this.Controls.Add(this.labelAttachPass);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -146,7 +147,7 @@ namespace IP
 
         #endregion
 
-        private RoundedButton ButtonLabelEnter;
+        private RoundedButton buttonLabelEnter;
         private Label labelIPValue;
         private Label labelDateTime;
         private Label labelAttachPass;

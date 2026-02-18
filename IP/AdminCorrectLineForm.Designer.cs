@@ -37,6 +37,7 @@ namespace IP
             this.labelChooseLine = new System.Windows.Forms.Label();
             this.comboBoxLine = new System.Windows.Forms.ComboBox();
             this.lineInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.comboBoxCOMPort = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.lineInfoBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -74,7 +75,7 @@ namespace IP
             this.buttonChooseLine.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonChooseLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.buttonChooseLine.ForeColor = System.Drawing.Color.White;
-            this.buttonChooseLine.Location = new System.Drawing.Point(220, 260);
+            this.buttonChooseLine.Location = new System.Drawing.Point(220, 300);
             this.buttonChooseLine.Name = "buttonChooseLine";
             this.buttonChooseLine.Size = new System.Drawing.Size(170, 40);
             this.buttonChooseLine.TabIndex = 5;
@@ -109,6 +110,16 @@ namespace IP
             // 
             this.lineInfoBindingSource.DataSource = typeof(IP.LineInfo);
             // 
+            // comboBoxCOMPort
+            // 
+            this.comboBoxCOMPort.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.comboBoxCOMPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.comboBoxCOMPort.FormattingEnabled = true;
+            this.comboBoxCOMPort.Location = new System.Drawing.Point(220, 245);
+            this.comboBoxCOMPort.Name = "comboBoxCOMPort";
+            this.comboBoxCOMPort.Size = new System.Drawing.Size(170, 26);
+            this.comboBoxCOMPort.TabIndex = 9;
+            // 
             // AdminCorrectLineForm
             // 
             this.AcceptButton = this.buttonChooseLine;
@@ -117,6 +128,7 @@ namespace IP
             this.BackColor = System.Drawing.Color.Linen;
             this.ClientSize = new System.Drawing.Size(569, 410);
             this.ControlBox = false;
+            this.Controls.Add(this.comboBoxCOMPort);
             this.Controls.Add(this.comboBoxLine);
             this.Controls.Add(this.labelDateTime);
             this.Controls.Add(this.labelIPValue);
@@ -146,5 +158,6 @@ namespace IP
         private DataGridViewTextBoxColumn idDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn checklineDataGridViewTextBoxColumn;
         private BindingSource lineInfoBindingSource;
+        private ComboBox comboBoxCOMPort;
     }
 }
