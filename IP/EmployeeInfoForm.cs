@@ -176,7 +176,7 @@ namespace IP
 
                 int exitTimer = Int16.Parse(rootServer.GetProperty("Timer").ToString());
 
-                MyTimer.Interval = exitTimer * 1000;
+                MyTimer.Interval = exitTimer * 1000 * 60;
                 MyTimer.Tick += TimerTickHandler;
 
                 MyTimer.Start();
