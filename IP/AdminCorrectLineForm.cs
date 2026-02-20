@@ -162,7 +162,7 @@ namespace IP
                 {
                     comboBoxLine.Items.Clear();
                     comboBoxLine.Items.AddRange(lineNames);
-                    comboBoxLine.Text = "Выберите линию";
+                    comboBoxLine.Text = "Линия";
                 }
                 else
                 {
@@ -184,16 +184,11 @@ namespace IP
             {
                 string[] ports = SerialPort.GetPortNames();
 
-                //foreach (string port in ports)
-                //{
-                //    comboBoxCOMPort.Items.Add(port);
-                //}
-
                 if (ports != null && ports.Length > 0)
                 {
                     comboBoxCOMPort.Items.Clear();
                     comboBoxCOMPort.Items.AddRange(ports);
-                    comboBoxCOMPort.Text = "Выберите порт";
+                    comboBoxCOMPort.Text = "Порт";
                 }
                 else
                 {
@@ -315,5 +310,6 @@ namespace IP
                 }
             }
         }
+
     }
 }
