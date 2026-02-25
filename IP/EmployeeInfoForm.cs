@@ -176,7 +176,7 @@ namespace IP
 
                 int exitTimer = Int16.Parse(rootServer.GetProperty("Timer").ToString());
 
-                MyTimer.Interval = exitTimer * 1000;
+                MyTimer.Interval = exitTimer * 1000 * 60;
                 MyTimer.Tick += TimerTickHandler;
 
                 MyTimer.Start();
@@ -225,7 +225,7 @@ namespace IP
                 authorizationForm.BringToFront();
                 authorizationForm.Activate();
                 authorizationForm.Focus();
-                MessageBox.Show("Линия не запущена", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Линия не запущена. Повторите авторизацию", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 

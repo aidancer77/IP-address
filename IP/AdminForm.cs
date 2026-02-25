@@ -14,6 +14,7 @@ namespace IP
         private bool continueReading = true;
         private Thread readThread;
         private bool isFormClosing = false;
+        private Control currentInputControl = null;
 
         public AdminForm()
         {
@@ -26,6 +27,100 @@ namespace IP
             StartAdminCardCheck();
             GetIPAddress();
             SetTimer();
+
+            InputControl();
+        }
+
+        private void InputControl()
+        {
+            // Отслеживаем, какое поле активно
+            textBoxPassword.Enter += (s, e) => currentInputControl = textBoxPassword;
+
+            // Подключаем обработчики для цифровых кнопок
+            buttonOne.Click += (s, e) => AppendToActiveInput("1");
+            buttonTwo.Click += (s, e) => AppendToActiveInput("2");
+            buttonThree.Click += (s, e) => AppendToActiveInput("3");
+            buttonFour.Click += (s, e) => AppendToActiveInput("4");
+            buttonFive.Click += (s, e) => AppendToActiveInput("5");
+            buttonSix.Click += (s, e) => AppendToActiveInput("6");
+            buttonSeven.Click += (s, e) => AppendToActiveInput("7");
+            buttonEight.Click += (s, e) => AppendToActiveInput("8");
+            buttonNine.Click += (s, e) => AppendToActiveInput("9");
+            buttonZero.Click += (s, e) => AppendToActiveInput("0");
+            buttonDot.Click += (s, e) => AppendToActiveInput(".");
+            buttonBackspace.Click += (s, e) => BackspaceActiveInput();
+        }
+
+        private void AppendToPassword(string digit)
+        {
+            // Проверяем, активен ли textBoxPassword
+            if (textBoxPassword.Focused)
+            {
+                int selectionStart = textBoxPassword.SelectionStart;
+                textBoxPassword.Text = textBoxPassword.Text.Insert(selectionStart, digit);
+                textBoxPassword.SelectionStart = selectionStart + digit.Length;
+            }
+            else
+            {
+                // Если textBoxPassword не активен, просто добавляем в конец
+                textBoxPassword.Text += digit;
+            }
+        }
+        private void BackspacePassword()
+        {
+            if (textBoxPassword.Focused && textBoxPassword.Text.Length > 0 && textBoxPassword.SelectionStart > 0)
+            {
+                // Удаляем символ перед курсором
+                int selectionStart = textBoxPassword.SelectionStart;
+                textBoxPassword.Text = textBoxPassword.Text.Remove(selectionStart - 1, 1);
+                textBoxPassword.SelectionStart = selectionStart - 1;
+            }
+            else if (textBoxPassword.Text.Length > 0)
+            {
+                // Если textBoxPassword не в фокусе, удаляем последний символ
+                textBoxPassword.Text = textBoxPassword.Text.Remove(textBoxPassword.Text.Length - 1);
+            }
+        }
+        private void HighlightActiveInput(object sender, EventArgs e)
+        {
+            textBoxPassword.BackColor = System.Drawing.Color.White;
+
+            if (sender is TextBox activeTextBox)
+            {
+                activeTextBox.BackColor = System.Drawing.Color.LightYellow;
+            }
+        }
+        private void AppendToActiveInput(string digit)
+        {
+            TextBox activeTextBox = currentInputControl as TextBox;
+
+            if (activeTextBox != null)
+            {
+                int selectionStart = activeTextBox.SelectionStart;
+                activeTextBox.Text = activeTextBox.Text.Insert(selectionStart, digit);
+                activeTextBox.SelectionStart = selectionStart + digit.Length;
+            }
+            else
+            {
+                // Если нет активного поля, по умолчанию используем textBoxPassword
+                AppendToPassword(digit);
+            }
+        }
+        private void BackspaceActiveInput()
+        {
+            TextBox activeTextBox = currentInputControl as TextBox;
+
+            if (activeTextBox != null && activeTextBox.Text.Length > 0 && activeTextBox.SelectionStart > 0)
+            {
+                int selectionStart = activeTextBox.SelectionStart;
+                activeTextBox.Text = activeTextBox.Text.Remove(selectionStart - 1, 1);
+                activeTextBox.SelectionStart = selectionStart - 1;
+            }
+            else if (textBoxPassword.Text.Length > 0)
+            {
+                // Если нет активного поля, удаляем из textBoxPassword
+                BackspacePassword();
+            }
         }
 
         private void RoundedForm_Paint(object sender, PaintEventArgs e)
